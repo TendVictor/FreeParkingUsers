@@ -49,14 +49,17 @@ public class MainActivity extends FragmentActivity {
 
         campaignFragment mCampaign = new campaignFragment();
         mCampaign.setTitle("活动");
+        mCampaign.setIconId(R.drawable.car);
         fragments.add(mCampaign);
 
         ticketFragment mTicketFragment = new ticketFragment();
-        mCampaign.setTitle("停车场");
+        mTicketFragment.setTitle("停车场");
+        mTicketFragment.setIconId(R.drawable.ticket);
         fragments.add(mTicketFragment);
 
         mineFragment  mMineFragment= new mineFragment();
-        mCampaign.setTitle("自己");
+        mMineFragment.setIconId(R.drawable.info);
+        mMineFragment.setTitle("自己");
         fragments.add(mMineFragment);
 
         return fragments;
@@ -90,7 +93,7 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         public int getIconResId(int index) {
-            return 0;
+            return mFragments.get(index).getIconId();
         }
 
         @Override
