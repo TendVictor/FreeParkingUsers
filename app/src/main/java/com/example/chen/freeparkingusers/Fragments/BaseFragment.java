@@ -7,7 +7,7 @@ import android.widget.TextView;
  * Created by chen on 16/7/4.
  */
 public class BaseFragment extends Fragment {
-    protected String title;
+    protected String title = "";
     protected int Resid;
     protected TextView tv;
 

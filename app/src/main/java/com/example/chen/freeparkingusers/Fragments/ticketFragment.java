@@ -11,7 +11,7 @@ import com.example.chen.freeparkingusers.R;
 /**
  * Created by chen on 16/7/4.
  */
-public class ticketFragment extends BaseFragment{
+public class TicketFragment extends BaseFragment{
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container , Bundle SavedInstanceState){

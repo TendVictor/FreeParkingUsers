@@ -11,7 +11,7 @@ import com.example.chen.freeparkingusers.R;
 /**
  * Created by chen on 16/7/4.
  */
-public class mineFragment extends BaseFragment{
+public class MineFragment extends BaseFragment{
 
 
 
