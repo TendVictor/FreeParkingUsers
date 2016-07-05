@@ -13,6 +13,8 @@ import com.example.chen.freeparkingusers.R;
  */
 public class mineFragment extends BaseFragment{
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container , Bundle SavedInstanceState){
         View view = inflater.inflate(R.layout.fragment_mine,null,false);
