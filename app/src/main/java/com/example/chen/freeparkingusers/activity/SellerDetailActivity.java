@@ -8,12 +8,12 @@ import com.example.chen.freeparkingusers.R;
 /**
  * Created by Pants on 2016/7/5.
  */
-public class CampaignDetailActivity extends Activity {
+public class SellerDetailActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compaign_detail);
-        
+
     }
 }
