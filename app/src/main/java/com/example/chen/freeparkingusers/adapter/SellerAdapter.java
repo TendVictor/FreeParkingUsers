@@ -38,7 +38,7 @@ public class SellerAdapter extends RecyclerView.Adapter<SellerAdapter.myViewHold
         holder.name.setText(mDatas.get(position).getSellerName());
         holder.place.setText(mDatas.get(position).getSellerAddress());
         holder.contact.setText(mDatas.get(position).getSellerContact());
-        holder.image.setImageResource(R.drawable.burgerking);
+        holder.image.setImageResource(R.drawable.iv_seller_default);
     }
 
     @Override

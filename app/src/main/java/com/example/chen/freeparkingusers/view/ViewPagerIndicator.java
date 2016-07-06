@@ -54,7 +54,7 @@ public class ViewPagerIndicator extends LinearLayout {
     /**
      * 标题正常时的颜色
      */
-    private static final int COLOR_TEXT_NORMAL = 0x1b1b1b;
+    private static final int COLOR_TEXT_NORMAL = 0x1b1b1bFF;
     /**
      * 标题选中时的颜色
      */
@@ -307,7 +307,7 @@ public class ViewPagerIndicator extends LinearLayout {
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         lp.width = getScreenWidth() / mTabVisibleCount;
         tv.setGravity(Gravity.CENTER);
-        tv.setTextColor(COLOR_TEXT_NORMAL);
+        tv.setTextColor(Color.parseColor("#1b1b1b"));
         tv.setText(text);
         tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);//调整字体大小
         tv.setLayoutParams(lp);

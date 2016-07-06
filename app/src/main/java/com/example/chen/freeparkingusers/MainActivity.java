@@ -8,7 +8,7 @@ import android.support.v4.view.ViewPager;
 
 import com.example.chen.freeparkingusers.Fragments.BaseFragment;
 import com.example.chen.freeparkingusers.Fragments.SellerFragment;
-import com.example.chen.freeparkingusers.Fragments.TicketFragment;
+import com.example.chen.freeparkingusers.Fragments.ticketFragment;
 import com.example.chen.freeparkingusers.view.ViewPagerIndicator;
 
 import java.util.ArrayList;
@@ -22,8 +22,8 @@ public class MainActivity extends FragmentActivity {
 
     private List<BaseFragment> fragments;
 
-    private SellerFragment sellerFragment;
-    private TicketFragment ticketFragment;
+    private SellerFragment mSellerFragment;
+    private ticketFragment mTicketFragment;
 
     private List<String> mDatas = Arrays.asList("商家","停车券1");
 
@@ -48,13 +48,13 @@ public class MainActivity extends FragmentActivity {
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
 
         fragments = new ArrayList<>();
-        sellerFragment = new SellerFragment();
-        sellerFragment.setTitle(mDatas.get(0));
+        mSellerFragment = new SellerFragment();
+        mSellerFragment.setTitle(mDatas.get(0));
 
-        ticketFragment = new TicketFragment();
-        ticketFragment.setTitle(mDatas.get(1));
-        fragments.add(sellerFragment);
-        fragments.add(ticketFragment);
+        mTicketFragment = new ticketFragment();
+//        ticketFragment.setTitle(mDatas.get(1));
+        fragments.add(mSellerFragment);
+        fragments.add(mTicketFragment);
 
         mAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override

@@ -3,6 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+    
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"/>
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_seller"
