@@ -43,7 +43,8 @@
             android:layout_weight="1"
             android:paddingBottom="4dp"
             android:paddingTop="4dp"
-            android:src="@drawable/iv_scan" />
+            android:src="@drawable/iv_scan"
+            android:onClick="scanQRCode"/>
 
     </LinearLayout>
 

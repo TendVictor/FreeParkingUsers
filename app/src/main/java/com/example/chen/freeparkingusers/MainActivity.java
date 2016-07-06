@@ -1,16 +1,19 @@
 package com.example.chen.freeparkingusers;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.View;
 
 import com.example.chen.freeparkingusers.Fragments.BaseFragment;
 import com.example.chen.freeparkingusers.Fragments.SellerFragment;
 import com.example.chen.freeparkingusers.Fragments.ticketFragment;
 import com.example.chen.freeparkingusers.view.ViewPagerIndicator;
+import com.xys.libzxing.zxing.activity.CaptureActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +46,10 @@ public class MainActivity extends FragmentActivity {
 
     }
 
+    public void scanQRCode(View view){
+        Intent i = new Intent(MainActivity.this, CaptureActivity.class);
+        startActivity(i);
+    }
     private void initCenterView() {
 
         mIndicator = (ViewPagerIndicator) findViewById(R.id.id_indicator);
