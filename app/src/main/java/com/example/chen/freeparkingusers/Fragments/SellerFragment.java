@@ -33,6 +33,8 @@ public class SellerFragment extends BaseFragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container , Bundle SavedInstanceState){
         View view = inflater.inflate(R.layout.fragment_campaign,null,false);
         mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_seller);
+        mSwipeLayout.setOnRefreshListener(new onRefreshListener());
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_seller);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -51,6 +53,15 @@ public class SellerFragment extends BaseFragment{
             mDatas.add(s);
         }
     }
+
+    class onRefreshListener implements SwipeRefreshLayout.OnRefreshListener {
+
+        @Override
+        public void onRefresh() {
+
+        }
+    }
+
 
 
 }

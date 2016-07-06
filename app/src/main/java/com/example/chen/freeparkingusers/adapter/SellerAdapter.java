@@ -54,8 +54,8 @@ public class SellerAdapter extends RecyclerView.Adapter<SellerAdapter.myViewHold
         public myViewHolder(View itemView) {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.tv_seller_name);
-            place = (TextView) itemView.findViewById(R.id.tv_seller_place);
-            contact = (TextView) itemView.findViewById(R.id.tv_seller_time);
+            place = (TextView) itemView.findViewById(R.id.tv_seller_address);
+            contact = (TextView) itemView.findViewById(R.id.tv_seller_contact);
             image = (ImageView) itemView.findViewById(R.id.iv_seller);
         }
     }
