@@ -34,7 +34,29 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.MyViewHold
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MyViewHolder holder, int position) {
+
+         //设置显示数据集
+
+
+         //添加时间监听事件
+        if(onItemClickListener != null){
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = holder.getLayoutPosition();
+                    onItemClickListener.onItemClick(v,pos);
+                }
+            });
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    int pos = holder.getLayoutPosition();
+                    onItemClickListener.onItemLongClick(v,pos);
+                    return false;
+                }
+            });
+        }
     }
 
     @Override
@@ -44,6 +66,7 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.MyViewHold
 
     class MyViewHolder extends RecyclerView.ViewHolder
     {
+        View itemView;
         ImageView iv_activity;
         TextView tv_address;
         TextView tv_name;
@@ -51,13 +74,25 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.MyViewHold
         public MyViewHolder(View view)
         {
             super(view);
-
+            itemView = view;
             iv_activity = $(view,R.id.iv_activity);
             tv_address = $(view,R.id.tv_address);
             tv_name = $(view,R.id.tv_name);
             tv_deadline = $(view,R.id.tv_deadline);
         }
     }
+
+    private onItemClickListener onItemClickListener = null;
+
+    public void setOnItemClickListener(TicketAdapter.onItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public interface onItemClickListener{
+        void onItemClick(View view,int position);
+        void onItemLongClick(View view,int position);
+    }
+
     private <T extends View> T $(View v, int id) {
         return (T) v.findViewById(id);
     }

@@ -1,15 +1,18 @@
 package com.example.chen.freeparkingusers.Fragments;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.chen.freeparkingusers.R;
+import com.example.chen.freeparkingusers.activity.QRCodeActivity;
 import com.example.chen.freeparkingusers.adapter.TicketAdapter;
 import com.example.chen.freeparkingusers.view.DividerItemDecoration;
 
@@ -21,6 +24,7 @@ import java.util.HashMap;
  */
 public class ticketFragment extends BaseFragment {
 
+    public static final String TAG = "TicFrg";
     private View rootView = null;
 
     private SwipeRefreshLayout swipeRefreshLayout = null;
@@ -49,6 +53,19 @@ public class ticketFragment extends BaseFragment {
 
     private void initVariables() {
         ticketAdapter = new TicketAdapter(getActivity(),dataSet);
+        ticketAdapter.setOnItemClickListener(new TicketAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                //传递数据
+                Intent i = new Intent(getActivity(), QRCodeActivity.class);
+                startActivity(i);
+
+            }
+            @Override
+            public void onItemLongClick(View view, int position) {
+                Log.e(TAG,"Long click from TicFrg");
+            }
+        });
     }
 
     private void initViewAndEvents(View view) {

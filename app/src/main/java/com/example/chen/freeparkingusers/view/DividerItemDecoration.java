@@ -1,12 +1,10 @@
 package com.example.chen.freeparkingusers.view;
-
 /*
  * Copyright (C) 2014 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * limitations under the License.
  */
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -48,13 +46,11 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void onDraw(Canvas c, RecyclerView parent) {
-
         if (mOrientation == VERTICAL_LIST) {
             drawVertical(c, parent);
         } else {
             drawHorizontal(c, parent);
         }
-
     }
 
 
