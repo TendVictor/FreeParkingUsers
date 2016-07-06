@@ -36,7 +36,7 @@
                 android:gravity="left|bottom"
                 android:text="汉堡王送停车券"
                 android:textColor="#1b1b1b"
-                android:textSize="18sp" />
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/tv_address"
@@ -46,7 +46,7 @@
                 android:gravity="left|center"
                 android:text="济南高新区万达广场"
                 android:textColor="#fc7e00"
-                android:textSize="17sp" />
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/tv_deadline"
@@ -56,7 +56,7 @@
                 android:gravity="left|top"
                 android:text="使用期限 2016.7.1-2016.7.8"
                 android:textColor="#5e5e5e"
-                android:textSize="17sp" />
+                android:textSize="15sp" />
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

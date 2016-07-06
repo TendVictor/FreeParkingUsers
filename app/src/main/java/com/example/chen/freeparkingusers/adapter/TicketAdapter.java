@@ -35,9 +35,6 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.MyViewHold
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        holder.tv_name.setText("name");
-        holder.tv_address.setText("address");
-        holder.tv_deadline.setText("deadline");
     }
 
     @Override
