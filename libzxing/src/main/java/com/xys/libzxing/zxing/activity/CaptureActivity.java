@@ -28,7 +28,6 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.RelativeLayout;
 
 import com.google.zxing.Result;
 import com.xys.libzxing.R;
@@ -61,7 +60,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     private BeepManager beepManager;
 
     private SurfaceView scanPreview = null;
-    private RelativeLayout scanContainer;
     private ScanView scanCropView;
 
     private Rect mCropRect = null;
@@ -82,7 +80,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_capture);
 
-        scanContainer = (RelativeLayout) findViewById(R.id.capture_container);
         scanPreview = (SurfaceView) findViewById(R.id.capture_preview);
         //扫描视图
         scanCropView = (ScanView) findViewById(R.id.capture_crop_view);

@@ -1,15 +1,18 @@
 package com.example.chen.freeparkingusers;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.View;
 
 import com.example.chen.freeparkingusers.Fragments.BaseFragment;
 import com.example.chen.freeparkingusers.Fragments.SellerFragment;
 import com.example.chen.freeparkingusers.Fragments.TicketFragment;
 import com.example.chen.freeparkingusers.view.ViewPagerIndicator;
+import com.xys.libzxing.zxing.activity.CaptureActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,6 +90,12 @@ public class MainActivity extends FragmentActivity {
         super.onStop();
     }
 
+
+    public void scanQRCode(View view){
+        Intent i = new Intent(MainActivity.this,CaptureActivity.class);
+        startActivity(i);
+        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+    }
 
     public class OnPageChangeListener implements ViewPager.OnPageChangeListener{
 
