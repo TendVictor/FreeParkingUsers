@@ -4,12 +4,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/tab_top" />
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_seller"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tv_campaign_test"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_seller"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </android.support.v7.widget.RecyclerView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
 </LinearLayout>

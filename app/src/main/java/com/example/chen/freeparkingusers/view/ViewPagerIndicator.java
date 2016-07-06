@@ -37,8 +37,10 @@ public class ViewPagerIndicator extends LinearLayout {
 
     private static final float RADIO_LINE = 1.0f / 5;
 
+    //初始时，指示器偏移量
     private int mLineTranslationX;
 
+    //手指滑动的偏移量
     private float mTranslationX;
 
     private static final int COUNT_DEFAULT_TAB = 2;
@@ -52,7 +54,7 @@ public class ViewPagerIndicator extends LinearLayout {
     /**
      * 标题正常时的颜色
      */
-    private static final int COLOR_TEXT_NORMAL = 0x77FFFFFF;
+    private static final int COLOR_TEXT_NORMAL = 0x1b1b1b;
     /**
      * 标题选中时的颜色
      */
@@ -75,7 +77,7 @@ public class ViewPagerIndicator extends LinearLayout {
 
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setColor(Color.parseColor("#ffffffff"));
+        mPaint.setColor(Color.parseColor("#2CBEC5"));
         mPaint.setStrokeWidth((float) 3.0);
 //        mPaint.setStyle(Paint.Style.FILL);
         mPaint.setPathEffect(new CornerPathEffect(3));
@@ -90,6 +92,8 @@ public class ViewPagerIndicator extends LinearLayout {
         canvas.translate(mLineTranslationX + mTranslationX, getHeight() + 1);//?
         Log.d("mLineHeight", mLineHeight + "");
         Log.d("mLineWidth" ,mLineWidth+"");
+        Log.d("mLineTranslationX" ,mLineTranslationX+"");
+        Log.d("mTranslationX", mTranslationX + "");
         canvas.drawRect(0, -mLineHeight, mLineWidth,0, mPaint);
 //        canvas.drawPath(mPath, mPaint);
         canvas.restore();
@@ -182,8 +186,8 @@ public class ViewPagerIndicator extends LinearLayout {
             @Override
             public void onPageSelected(int position) {
                 //处理一些操作
-                resetTextViewColor();
-                highLightTextView(position);
+//                resetTextViewColor();
+//                highLightTextView(position);
                 //回调
                 if (onPageChangeListener != null) {
                     onPageChangeListener.onPageSelected(position);
@@ -201,7 +205,7 @@ public class ViewPagerIndicator extends LinearLayout {
         // 设置当前页
         mViewPager.setCurrentItem(position);
         //高亮
-        highLightTextView(position);
+//        highLightTextView(position);
     }
 
     //设置原先的颜色
@@ -307,7 +311,6 @@ public class ViewPagerIndicator extends LinearLayout {
         tv.setText(text);
         tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);//调整字体大小
         tv.setLayoutParams(lp);
-
         return tv;
     }
 
@@ -315,7 +318,7 @@ public class ViewPagerIndicator extends LinearLayout {
     private void initLine() {
         mPath = new Path();
 
-        mLineHeight = 10;
+        mLineHeight = 8;
         mPath.moveTo(0, 0);
         mPath.lineTo(mLineWidth, 0);
         mPath.lineTo(0,-mLineHeight);
