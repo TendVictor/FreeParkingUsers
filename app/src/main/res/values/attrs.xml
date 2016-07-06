@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="TabView">
-        <attr name="tabPageIndicator" format="reference" />
-        <attr name="tabView" format="reference" />
+
+    <attr name="item_count" format = "integer"></attr>
+
+    <declare-styleable name="TabIndicator">
+        <attr name="item_count"/>
     </declare-styleable>
+
 </resources>  

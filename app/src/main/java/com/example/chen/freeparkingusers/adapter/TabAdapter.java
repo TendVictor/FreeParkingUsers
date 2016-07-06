@@ -3,6 +3,7 @@ package com.example.chen.freeparkingusers.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.view.View;
 
 import com.example.chen.freeparkingusers.Fragments.BaseFragment;
 
@@ -24,6 +25,11 @@ public class TabAdapter extends FragmentPagerAdapter{
 
 
     @Override
+    public boolean isViewFromObject(View arg0, Object arg1) {
+        return arg0==arg1;
+    }
+
+    @Override
     public Fragment getItem(int position) {
         return fragments.get(position);
     }
@@ -33,7 +39,9 @@ public class TabAdapter extends FragmentPagerAdapter{
         return fragments.size();
     }
 
-    public CharSequence getPagerTitle(int position){
+    @Override
+    public CharSequence getPageTitle(int position){
         return list_strings.get(position % list_strings.size());
     }
+
 }
