@@ -25,11 +25,9 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.google.zxing.Result;
@@ -39,6 +37,7 @@ import com.xys.libzxing.zxing.decode.DecodeThread;
 import com.xys.libzxing.zxing.utils.BeepManager;
 import com.xys.libzxing.zxing.utils.CaptureActivityHandler;
 import com.xys.libzxing.zxing.utils.InactivityTimer;
+import com.xys.libzxing.zxing.view.ScanView;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -63,8 +62,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
     private SurfaceView scanPreview = null;
     private RelativeLayout scanContainer;
-    private RelativeLayout scanCropView;
-    private ImageView scanLine;
+    private ScanView scanCropView;
 
     private Rect mCropRect = null;
     private boolean isHasSurface = false;
@@ -80,26 +78,16 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_capture);
 
-        scanPreview = (SurfaceView) findViewById(R.id.capture_preview);
         scanContainer = (RelativeLayout) findViewById(R.id.capture_container);
-        scanCropView = (RelativeLayout) findViewById(R.id.capture_crop_view);
-        scanLine = (ImageView) findViewById(R.id.capture_scan_line);
-
+        scanPreview = (SurfaceView) findViewById(R.id.capture_preview);
+        //扫描视图
+        scanCropView = (ScanView) findViewById(R.id.capture_crop_view);
         inactivityTimer = new InactivityTimer(this);
         beepManager = new BeepManager(this);
-
-        TranslateAnimation animation = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, 0.0f, Animation
-                .RELATIVE_TO_PARENT, 0.0f, Animation.RELATIVE_TO_PARENT, 0.0f, Animation.RELATIVE_TO_PARENT,
-                0.9f);
-        animation.setDuration(4500);
-        animation.setRepeatCount(-1);
-        animation.setRepeatMode(Animation.RESTART);
-        scanLine.startAnimation(animation);
     }
 
     @Override
@@ -113,8 +101,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         // first launch. That led to bugs where the scanning rectangle was the
         // wrong size and partially
         // off screen.
-        cameraManager = new CameraManager(getApplication());
 
+        cameraManager = new CameraManager(getApplication());
         handler = null;
 
         if (isHasSurface) {
@@ -173,6 +161,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
     }
 
+    public void onback(View view){
+        this.finish();
+    }
     /**
      * A valid barcode has been found, so give an indication of success and show
      * the results.
@@ -188,6 +179,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         bundle.putInt("width", mCropRect.width());
         bundle.putInt("height", mCropRect.height());
         bundle.putString("result", rawResult.getText());
+        Log.e(TAG,rawResult.getText());
         resultIntent.putExtras(bundle);
         this.setResult(RESULT_OK, resultIntent);
         CaptureActivity.this.finish();
@@ -208,15 +200,14 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             if (handler == null) {
                 handler = new CaptureActivityHandler(this, cameraManager, DecodeThread.ALL_MODE);
             }
-
             initCrop();
         } catch (IOException ioe) {
-            Log.w(TAG, ioe);
+            Log.e(TAG, ioe.getMessage());
             displayFrameworkBugMessageAndExit();
         } catch (RuntimeException e) {
             // Barcode Scanner has seen crashes in the wild of this variety:
             // java.?lang.?RuntimeException: Fail to connect to camera service
-            Log.w(TAG, "Unexpected error initializing camera", e);
+            Log.e(TAG, "Unexpected error initializing camera", e);
             displayFrameworkBugMessageAndExit();
         }
     }
@@ -258,35 +249,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
      * 初始化截取的矩形区域
      */
     private void initCrop() {
-        int cameraWidth = cameraManager.getCameraResolution().y;
-        int cameraHeight = cameraManager.getCameraResolution().x;
-
-        /** 获取布局中扫描框的位置信息 */
-        int[] location = new int[2];
-        scanCropView.getLocationInWindow(location);
-
-        int cropLeft = location[0];
-        int cropTop = location[1] - getStatusBarHeight();
-
-        int cropWidth = scanCropView.getWidth();
-        int cropHeight = scanCropView.getHeight();
-
-        /** 获取布局容器的宽高 */
-        int containerWidth = scanContainer.getWidth();
-        int containerHeight = scanContainer.getHeight();
-
-        /** 计算最终截取的矩形的左上角顶点x坐标 */
-        int x = cropLeft * cameraWidth / containerWidth;
-        /** 计算最终截取的矩形的左上角顶点y坐标 */
-        int y = cropTop * cameraHeight / containerHeight;
-
-        /** 计算最终截取的矩形的宽度 */
-        int width = cropWidth * cameraWidth / containerWidth;
-        /** 计算最终截取的矩形的高度 */
-        int height = cropHeight * cameraHeight / containerHeight;
-
-        /** 生成最终的截取的矩形 */
-        mCropRect = new Rect(x, y, width + x, height + y);
+        mCropRect = CameraManager.getFramingRect();
     }
 
     private int getStatusBarHeight() {

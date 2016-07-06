@@ -18,6 +18,7 @@ package com.xys.libzxing.zxing.camera;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.Size;
 import android.os.Handler;
@@ -40,14 +41,19 @@ public class CameraManager {
     private static final String TAG = CameraManager.class.getSimpleName();
 
     private final Context context;
-    private final CameraConfigurationManager configManager;
+    private static  CameraConfigurationManager configManager;
+    private static Rect framingRect;
+    private static final int MIN_FRAME_WIDTH = 240;
+    private static final int MIN_FRAME_HEIGHT = 240;
+    private static final int MAX_FRAME_WIDTH = 1200; // = 5/8 * 1920
+    private static final int MAX_FRAME_HEIGHT = 675; // = 5/8 * 1080
     /**
      * Preview frames are delivered here, which we pass on to the registered
      * handler. Make sure to clear the handler so it will only receive one
      * message.
      */
     private final PreviewCallback previewCallback;
-    private Camera camera;
+    private static Camera camera;
     private AutoFocusManager autoFocusManager;
     private boolean initialized;
     private boolean previewing;
@@ -174,6 +180,51 @@ public class CameraManager {
         }
     }
 
+    /**
+     * Calculates the framing rect which the UI should draw to show the user where to place the
+     * barcode. This target helps with alignment as well as forces the user to hold the device
+     * far enough away to ensure the image will be in focus.
+     *
+     * @return The rectangle to draw on screen in window coordinates.
+     */
+    public  static synchronized Rect getFramingRect() {
+        if (framingRect == null) {
+            if (camera == null) {
+                return null;
+            }
+            Point screenResolution = configManager.getScreenResolution();
+            if (screenResolution == null) {
+                // Called early, before init even finished
+                return null;
+            }
+
+            int width = findDesiredDimensionInRange(screenResolution.x, MIN_FRAME_WIDTH, MAX_FRAME_WIDTH);
+            int height = findDesiredDimensionInRange(screenResolution.y, MIN_FRAME_HEIGHT, MAX_FRAME_HEIGHT);
+
+            int min = Math.min(width,height);
+
+            width = min;
+            height = min;
+
+            int leftOffset = (screenResolution.x - width) / 2;
+            int topOffset = (screenResolution.y - height) / 2;
+
+            framingRect = new Rect(leftOffset, topOffset, leftOffset + width, topOffset + height);
+            Log.d(TAG, "Calculated framing rect: " + framingRect);
+        }
+        return framingRect;
+    }
+
+    private static int findDesiredDimensionInRange(int resolution, int hardMin, int hardMax) {
+        int dim = 5 * resolution / 8; // Target 5/8 of each dimension
+        if (dim < hardMin) {
+            return hardMin;
+        }
+        if (dim > hardMax) {
+            return hardMax;
+        }
+        return dim;
+    }
     /**
      * Allows third party apps to specify the camera ID, rather than determine
      * it automatically based on available cameras and their orientation.
