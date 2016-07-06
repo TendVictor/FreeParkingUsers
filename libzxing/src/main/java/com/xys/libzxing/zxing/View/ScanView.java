@@ -22,12 +22,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 
 import com.google.zxing.ResultPoint;
-import com.xys.libzxing.R;
 import com.xys.libzxing.zxing.camera.CameraManager;
 
 import java.util.Collection;
@@ -57,7 +55,7 @@ public final class ScanView extends View {
     /**
      * 扫描框中的中间线的宽度
      */
-    private static final int MIDDLE_LINE_WIDTH = 6;
+    private static final int MIDDLE_LINE_WIDTH = 3;
 
     /**
      * 扫描框中的中间线的与扫描框左右的间隙
@@ -152,7 +150,7 @@ public final class ScanView extends View {
             canvas.drawBitmap(resultBitmap, frame.left, frame.top, paint);
         } else {
             //画扫描框边上的角，总共8个部分
-            paint.setColor(0xAA00FF00);
+            paint.setColor(Color.parseColor("#2CBEC5"));
             canvas.drawRect(frame.left, frame.top, frame.left + ScreenRate,
                     frame.top + CORNER_WIDTH, paint);
             canvas.drawRect(frame.left, frame.top, frame.left + CORNER_WIDTH, frame.top
@@ -175,16 +173,7 @@ public final class ScanView extends View {
             if(slideTop >= frame.bottom){
                 slideTop = frame.top;
             }
-            //canvas.drawRect(frame.left + MIDDLE_LINE_PADDING, slideTop - MIDDLE_LINE_WIDTH/2, frame.right - MIDDLE_LINE_PADDING,slideTop + MIDDLE_LINE_WIDTH2, paint);
-
-            //画扫描线
-            Rect lineRect = new Rect();
-            lineRect.left = frame.left;
-            lineRect.right = frame.right;
-            lineRect.top = slideTop;
-            lineRect.bottom = slideTop + 18;
-
-            canvas.drawBitmap(((BitmapDrawable)(getResources().getDrawable(R.drawable.qrcode_scan_line))).getBitmap(), null, lineRect, paint);
+            canvas.drawRect(frame.left + MIDDLE_LINE_PADDING, slideTop - MIDDLE_LINE_WIDTH/2, frame.right - MIDDLE_LINE_PADDING,slideTop + MIDDLE_LINE_WIDTH, paint);
 
             //画扫描框下面的字
             paint.setColor(Color.WHITE);

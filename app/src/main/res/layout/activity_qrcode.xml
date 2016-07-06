@@ -1,14 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.chen.freeparkingusers.activity.QRCodeActivity">
-
-    <TextView
+    android:background="#262729"
+    android:orientation="vertical"
+    >
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="WTF~"
-        android:textSize="33sp"
-        android:textColor="#000"/>
-</RelativeLayout>
+        android:layout_height="420dp"
+        android:layout_margin="40dp"
+        android:background="@drawable/qr_background"
+
+        android:layout_gravity="center_horizontal"
+        >
+
+        <LinearLayout
+            android:id="@+id/ll_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="14dp"
+            android:layout_marginLeft="12dp"
+            >
+            <TextView
+                android:id="@+id/tv_address_detail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="高新区万达广场停车券"
+                android:textSize="20sp"
+                android:textColor="#000"
+                />
+            <TextView
+                android:id="@+id/tv_deadline_detail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#959595"
+                android:textSize="15sp"
+                android:text="2016.7.1-7.5"/>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_qrcode"
+            android:layout_width="230dp"
+            android:layout_height="230dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="50dp"
+            android:background="@drawable/default_img"
+            android:scaleType="centerCrop"
+            android:layout_centerHorizontal="true"
+            />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/iv_qrcode_close"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/qr_close"
+        android:scaleType="fitXY"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="50dp"
+        android:onClick="exitQrCode"
+        />
+</LinearLayout>
