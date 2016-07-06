@@ -1,5 +1,6 @@
 package com.example.chen.freeparkingusers;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -70,6 +71,7 @@ public class MainActivity extends FragmentActivity {
 
 
         mIndicator.setTabItemTitles(mDatas);
+        mIndicator.setBackgroundColor(Color.parseColor("#ffffff"));
         mViewPager.setAdapter(mAdapter);
 
         mIndicator.setViewPager(mViewPager,0);

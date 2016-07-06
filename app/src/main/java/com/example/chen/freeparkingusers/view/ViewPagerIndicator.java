@@ -306,7 +306,8 @@ public class ViewPagerIndicator extends LinearLayout {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         lp.width = getScreenWidth() / mTabVisibleCount;
-        tv.setGravity(Gravity.CENTER);
+        tv.setGravity(Gravity.CENTER|Gravity.TOP);
+        tv.setPadding(0, 8, 0, 0);
         tv.setTextColor(Color.parseColor("#1b1b1b"));
         tv.setText(text);
         tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);//调整字体大小
