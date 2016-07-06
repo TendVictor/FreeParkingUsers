@@ -1,18 +1,16 @@
 package com.example.chen.freeparkingusers;
 
-import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.View;
 
 import com.example.chen.freeparkingusers.Fragments.BaseFragment;
 import com.example.chen.freeparkingusers.Fragments.SellerFragment;
-import com.example.chen.freeparkingusers.Fragments.TicketFragment;
+import com.example.chen.freeparkingusers.Fragments.ticketFragment;
 import com.example.chen.freeparkingusers.view.ViewPagerIndicator;
-import com.xys.libzxing.zxing.activity.CaptureActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,8 +23,8 @@ public class MainActivity extends FragmentActivity {
 
     private List<BaseFragment> fragments;
 
-    private SellerFragment sellerFragment;
-    private TicketFragment ticketFragment;
+    private SellerFragment mSellerFragment;
+    private ticketFragment mTicketFragment;
 
     private List<String> mDatas = Arrays.asList("商家","停车券1");
 
@@ -51,13 +49,13 @@ public class MainActivity extends FragmentActivity {
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
 
         fragments = new ArrayList<>();
-        sellerFragment = new SellerFragment();
-        sellerFragment.setTitle(mDatas.get(0));
+        mSellerFragment = new SellerFragment();
+        mSellerFragment.setTitle(mDatas.get(0));
 
-        ticketFragment = new TicketFragment();
-        ticketFragment.setTitle(mDatas.get(1));
-        fragments.add(sellerFragment);
-        fragments.add(ticketFragment);
+        mTicketFragment = new ticketFragment();
+//        ticketFragment.setTitle(mDatas.get(1));
+        fragments.add(mSellerFragment);
+        fragments.add(mTicketFragment);
 
         mAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
@@ -73,6 +71,7 @@ public class MainActivity extends FragmentActivity {
 
 
         mIndicator.setTabItemTitles(mDatas);
+        mIndicator.setBackgroundColor(Color.parseColor("#ffffff"));
         mViewPager.setAdapter(mAdapter);
 
         mIndicator.setViewPager(mViewPager,0);
@@ -90,12 +89,6 @@ public class MainActivity extends FragmentActivity {
         super.onStop();
     }
 
-
-    public void scanQRCode(View view){
-        Intent i = new Intent(MainActivity.this,CaptureActivity.class);
-        startActivity(i);
-        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
-    }
 
     public class OnPageChangeListener implements ViewPager.OnPageChangeListener{
 

@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#f8f8f8"
     android:orientation="vertical"
+    android:paddingTop="4dp"
     tools:context="com.example.chen.freeparkingusers.MainActivity">
 
     <LinearLayout
@@ -15,7 +17,7 @@
             android:id="@+id/iv_person"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="16dp"
             android:layout_weight="1"
             android:paddingBottom="4dp"
             android:paddingTop="4dp"
@@ -44,6 +46,13 @@
             android:src="@drawable/iv_scan" />
 
     </LinearLayout>
+
+    <View
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#2CBEC5"
+        />
 
     <com.example.chen.freeparkingusers.view.ViewPagerIndicator
         android:id="@+id/id_indicator"
