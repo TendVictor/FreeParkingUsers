@@ -14,9 +14,10 @@ import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.example.pants.freeparkingtest.R;
-import com.example.pants.freeparkingtest.tool.DiskLruCache;
-import com.example.pants.freeparkingtest.tool.ImageResizer;
+
+import com.example.chen.freeparkingusers.R;
+import com.example.chen.freeparkingusers.tool.DiskLruCache;
+import com.example.chen.freeparkingusers.tool.ImageResizer;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
