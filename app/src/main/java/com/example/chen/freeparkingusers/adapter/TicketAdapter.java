@@ -42,7 +42,7 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.MyViewHold
          holder.tv_name.setText(tmp.get("activity_name"));
          holder.tv_address.setText(tmp.get("seller_name"));
          String img_url = tmp.get("activity_img");
-         ImageLoader.build(context).bindBitmap(img_url,R.drawable.default_img,holder.iv_activity);
+         ImageLoader.getInstance(context).bindBitmap(img_url,R.drawable.default_img,holder.iv_activity);
 
         //添加时间监听事件
         if(onItemClickListener != null){
