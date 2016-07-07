@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">FreeParkingUsers</string>
+    <string name="title_userInfo">个人中心</string>
 </resources>

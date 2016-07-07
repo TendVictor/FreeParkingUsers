@@ -90,10 +90,10 @@ public class ViewPagerIndicator extends LinearLayout {
         canvas.save();
 
         canvas.translate(mLineTranslationX + mTranslationX, getHeight() + 1);//?
-        Log.d("mLineHeight", mLineHeight + "");
-        Log.d("mLineWidth" ,mLineWidth+"");
-        Log.d("mLineTranslationX" ,mLineTranslationX+"");
-        Log.d("mTranslationX", mTranslationX + "");
+//        Log.d("mLineHeight", mLineHeight + "");
+//        Log.d("mLineWidth" ,mLineWidth+"");
+//        Log.d("mLineTranslationX" ,mLineTranslationX+"");
+//        Log.d("mTranslationX", mTranslationX + "");
         canvas.drawRect(0, -mLineHeight, mLineWidth,0, mPaint);
 //        canvas.drawPath(mPath, mPaint);
         canvas.restore();
