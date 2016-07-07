@@ -12,6 +12,7 @@
     <color name="colorTitleText">#444466</color>
     <color name="colorTextLight">#3EBDC6</color>
     <color name="colorTextDark">#1B1B1B</color>
+    <color name="colorTextGray">#666666</color>
     <color name="colorAppTheme">#2CBEC5</color>
 
     <color name="colorActionBar">#3EBDC6</color>
