@@ -1,19 +1,17 @@
 package com.example.chen.freeparkingusers.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
-
-import com.example.chen.freeparkingusers.R;
+import android.support.v7.app.AppCompatActivity;
 
 /**
  * Created by chen on 16/7/6.
  */
-public class SellerSearchActivity extends Activity {
+public class UserInfoDetailActivity extends AppCompatActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sellersearch);
+
 
     }
 
