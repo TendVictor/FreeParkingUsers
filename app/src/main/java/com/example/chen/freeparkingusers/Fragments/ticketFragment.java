@@ -58,8 +58,8 @@ public class ticketFragment extends BaseFragment {
             public void onItemClick(View view, int position) {
                 //传递数据
                 Intent i = new Intent(getActivity(), QRCodeActivity.class);
+                i.putExtra("ticket_id","helloworld");
                 startActivity(i);
-
             }
             @Override
             public void onItemLongClick(View view, int position) {
