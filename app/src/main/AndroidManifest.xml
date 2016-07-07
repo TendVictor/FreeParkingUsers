@@ -25,6 +25,8 @@
         <activity
             android:name=".activity.QRCodeActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+        <activity android:name=".activity.SellerDetailActivity" />
+        <activity android:name=".activity.CampaignDetailActivity" />
     </application>
 
 </manifest>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/line_height_larger"
+    android:layout_margin="1sp"
+    android:background="@color/colorItemBackground"
+    android:gravity="center_vertical">
+
+    <TextView
+        android:id="@+id/campaignNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/text_horizontal_margin1"
+        android:text="该商家暂时不存在任何活动~"
+        android:textColor="@color/colorTextLight"
+        android:textSize="@dimen/text_size_large" />
+</LinearLayout>
