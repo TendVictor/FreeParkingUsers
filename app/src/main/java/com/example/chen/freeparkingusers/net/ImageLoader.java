@@ -79,26 +79,25 @@ public class ImageLoader {
         @Override
         public void handleMessage(Message msg) {
             LoaderResult result = (LoaderResult) msg.obj;
-            ImageView imageView = result.imageView;
-            String uri = (String) imageView.getTag(TAG_KEY_URI);
+            String uri = (String) result.imageView.getTag(TAG_KEY_URI);
             if (uri.equals(result.uri)) {
-                mBindStrategy.bindBitmapToTarget(result.imageView, result.bitmap);
+                result.bindStrategy.bindBitmapToTarget(result.imageView, result.bitmap);
             } else {
                 Log.w(TAG, "set image bitmap, but url has changed, ignored!");
             }
         }
     };
 
-    private BindStrategy mBindStrategy = new BindStrategy() {
+    private BindStrategy defaultBindStrategy = new BindStrategy() {
         @Override
         public void bindBitmapToTarget(ImageView imageView, Bitmap bitmap) {
             imageView.setImageBitmap(bitmap);
         }
     };
 
-    public void setBindStrategy(BindStrategy bindStrategy) {
-        if (bindStrategy != null) {
-            mBindStrategy = bindStrategy;
+    public void setDefaultBindStrategy(BindStrategy defaultBindStrategy) {
+        if (defaultBindStrategy != null) {
+            this.defaultBindStrategy = defaultBindStrategy;
         }
     }
 
@@ -106,6 +105,7 @@ public class ImageLoader {
         void bindBitmapToTarget(ImageView imageView, Bitmap bitmap);
     }
 
+    private static ImageLoader imageLoader;
     private Context mContext;
     private ImageResizer mImageResizer = new ImageResizer();
     private LruCache<String, Bitmap> mMemoryCache;
@@ -135,17 +135,16 @@ public class ImageLoader {
         }
     }
 
-    public ImageLoader(Context context, BindStrategy bindStrategy) {
-        this(context);
-        setBindStrategy(bindStrategy);
-    }
-
-    public static ImageLoader build(Context context) {
-        return new ImageLoader(context);
-    }
-
-    public static ImageLoader build(Context context, BindStrategy bindStrategy) {
-        return new ImageLoader(context, bindStrategy);
+    public static ImageLoader getInstance(Context context) {
+        if (imageLoader == null) {
+            synchronized (ImageLoader.class) {
+                if (imageLoader == null) {
+                    imageLoader = new ImageLoader(context);
+                }
+                return imageLoader;
+            }
+        }
+        return imageLoader;
     }
 
     private void addBitmapToMemoryCache(String key, Bitmap bitmap) {
@@ -158,25 +157,33 @@ public class ImageLoader {
         return mMemoryCache.get(key);
     }
 
-    public void bindBitmap(String uri, int default_cover_id, ImageView imageView) {
-        bindBitmap(uri, default_cover_id, imageView, 0, 0);
+    public void bindBitmap(String uri, int default_image_id, ImageView imageView) {
+        bindBitmap(uri, default_image_id, imageView, null);
     }
 
-    public void bindBitmap(final String uri, int default_cover_id, final ImageView imageView, final int reqWidth, final int reqHeight) {
+    public void bindBitmap(String uri, int default_image_id, ImageView imageView, BindStrategy bindStrategy) {
+        if (bindStrategy == null)
+            bindStrategy = defaultBindStrategy;
+        bindBitmap(uri, default_image_id, imageView, 0, 0, bindStrategy);
+    }
+
+    public void bindBitmap(final String uri, int default_image_id, final ImageView imageView,
+                           final int reqWidth, final int reqHeight, final BindStrategy bindStrategy) {
         imageView.setTag(TAG_KEY_URI, uri);
         Bitmap bitmap = loadBitmapFromMemCache(uri);
         if (bitmap != null) {
-            mBindStrategy.bindBitmapToTarget(imageView, bitmap);
+            bindStrategy.bindBitmapToTarget(imageView, bitmap);
             return;
         }
-        mBindStrategy.bindBitmapToTarget(imageView, ((BitmapDrawable) mContext.getResources().getDrawable(default_cover_id)).getBitmap());
+        // Set default_image
+        bindStrategy.bindBitmapToTarget(imageView, ((BitmapDrawable) mContext.getResources().getDrawable(default_image_id)).getBitmap());
         // Load from DiskLruCache or Http(URL)
         Runnable loadBitmapTask = new Runnable() {
             @Override
             public void run() {
                 Bitmap bitmap = loadBitmap(uri, reqWidth, reqHeight);
                 if (bitmap != null) {
-                    LoaderResult result = new LoaderResult(imageView, uri, bitmap);
+                    LoaderResult result = new LoaderResult(imageView, uri, bitmap, bindStrategy);
                     mMainHandler.obtainMessage(MESSAGE_POST_RESULT, result).sendToTarget();
                 }
             }
@@ -349,7 +356,6 @@ public class ImageLoader {
         return sb.toString();
     }
 
-
     public File getDiskCacheDir(Context context, String uniqueName) {
         boolean externalStorageAvalable = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
         final String cachePath;
@@ -374,11 +380,13 @@ public class ImageLoader {
         public ImageView imageView;
         public String uri;
         public Bitmap bitmap;
+        public BindStrategy bindStrategy;
 
-        public LoaderResult(ImageView imageView, String uri, Bitmap bitmap) {
+        public LoaderResult(ImageView imageView, String uri, Bitmap bitmap, BindStrategy bindStrategy) {
             this.imageView = imageView;
             this.uri = uri;
             this.bitmap = bitmap;
+            this.bindStrategy = bindStrategy;
         }
     }
 
