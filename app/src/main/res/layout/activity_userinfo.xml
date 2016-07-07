@@ -36,6 +36,19 @@
         android:layout_height="1dp"
         android:background="#a8e4e6"/>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="180dp">
+
+        <ImageView
+            android:scaleType="fitXY"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/iv_userinfo_addimg"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
+
 
 
 </LinearLayout>

@@ -3,10 +3,12 @@ package com.example.chen.freeparkingusers.activity;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.chen.freeparkingusers.R;
 import com.example.chen.freeparkingusers.item.CampaignInfo;
+import com.example.chen.freeparkingusers.net.ImageLoader;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,7 +32,8 @@ public class CampaignDetailActivity extends Activity {
         ((TextView) findViewById(R.id.tvCampaignTime))
                 .setText(getInterval(campaignInfo.getCampaignStartTime(), campaignInfo.getCampaignEndTime()));
         ((TextView) findViewById(R.id.tvCampaignDetail)).setText(campaignInfo.getCampaignDetail());
-//        ImageLoader imageLoader = ImageLoader.build();
+        ImageLoader.getInstance(this).bindBitmap(campaignInfo.getCampaignImage(),
+                R.drawable.default_img, (ImageView) findViewById(R.id.ivCampaignImage));
     }
 
     private String getInterval(String campaignStartTime, String campaignEndTime) {
