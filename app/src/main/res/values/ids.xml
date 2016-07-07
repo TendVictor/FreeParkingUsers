@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="image_url" type="id">”image_url“</item>
+    <item name="image_url" type="id">"key_image_url"</item>
+    <item name="tag_campaign_info" type="id">"click_tag_campaign_id"</item>
 </resources>

@@ -8,10 +8,14 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.example.chen.freeparkingusers.Fragments.BaseFragment;
 import com.example.chen.freeparkingusers.Fragments.SellerFragment;
 import com.example.chen.freeparkingusers.Fragments.ticketFragment;
+import com.example.chen.freeparkingusers.activity.SellerSearchActivity;
+import com.example.chen.freeparkingusers.activity.UserInfoDetailActivity;
 import com.example.chen.freeparkingusers.view.ViewPagerIndicator;
 import com.xys.libzxing.zxing.activity.CaptureActivity;
 
@@ -19,7 +23,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements View.OnClickListener{
+
+    private EditText searchEdit;
+    private ImageView scanImage, persnalImage;
 
     private FragmentPagerAdapter mAdapter;
     private ViewPager mViewPager;
@@ -29,7 +36,7 @@ public class MainActivity extends FragmentActivity {
     private SellerFragment mSellerFragment;
     private ticketFragment mTicketFragment;
 
-    private List<String> mDatas = Arrays.asList("商家","停车券1");
+    private List<String> mDatas = Arrays.asList("商家","停车券");
 
     private ViewPagerIndicator mIndicator;
 
@@ -42,14 +49,15 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void initTopView() {
+        searchEdit = (EditText) findViewById(R.id.ev_search);
+        scanImage = (ImageView) findViewById(R.id.iv_scan);
+        persnalImage = (ImageView) findViewById(R.id.iv_person);
 
-
+        searchEdit.setOnClickListener(this);
+        scanImage.setOnClickListener(this);
+        persnalImage.setOnClickListener(this);
     }
 
-    public void scanQRCode(View view){
-        Intent i = new Intent(MainActivity.this, CaptureActivity.class);
-        startActivity(i);
-    }
     private void initCenterView() {
 
         mIndicator = (ViewPagerIndicator) findViewById(R.id.id_indicator);
@@ -60,7 +68,6 @@ public class MainActivity extends FragmentActivity {
         mSellerFragment.setTitle(mDatas.get(0));
 
         mTicketFragment = new ticketFragment();
-//        ticketFragment.setTitle(mDatas.get(1));
         fragments.add(mSellerFragment);
         fragments.add(mTicketFragment);
 
@@ -96,6 +103,36 @@ public class MainActivity extends FragmentActivity {
         super.onStop();
     }
 
+    //设置main中点击事件处理
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()){
+            case R.id.iv_person:
+                intoUserInfo();
+                break;
+            case R.id.iv_scan:
+                scanQRCode();
+                break;
+            case R.id.ev_search:
+                intoSearch();
+                break;
+        }
+    }
+
+    public void scanQRCode(){
+        Intent i = new Intent(MainActivity.this, CaptureActivity.class);
+        startActivity(i);
+    }
+
+    public void intoSearch(){
+        Intent i = new Intent(MainActivity.this, SellerSearchActivity.class);
+        startActivity(i);
+    }
+
+    public void intoUserInfo(){
+        Intent i = new Intent(MainActivity.this, UserInfoDetailActivity.class);
+        startActivity(i);
+    }
 
     public class OnPageChangeListener implements ViewPager.OnPageChangeListener{
 
