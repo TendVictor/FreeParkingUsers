@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -15,6 +16,7 @@ import com.example.chen.freeparkingusers.R;
 import com.example.chen.freeparkingusers.item.CampaignInfo;
 import com.example.chen.freeparkingusers.item.SellerInfo;
 import com.example.chen.freeparkingusers.net.Config;
+import com.example.chen.freeparkingusers.net.ImageLoader;
 import com.example.chen.freeparkingusers.net.NetPostConnection;
 
 import org.json.JSONArray;
@@ -73,7 +75,8 @@ public class SellerDetailActivity extends Activity {
         ((TextView) findViewById(R.id.tvSellerName)).setText(sellerInfo.getSellerName());
         ((TextView) findViewById(R.id.tvSellerAddress)).setText(sellerInfo.getSellerAddress());
         ((TextView) findViewById(R.id.tvSellerContact)).setText(sellerInfo.getSellerContact());
-//        ImageLoader imageLoader = ImageLoader.build();
+        ImageLoader.getInstance(this).bindBitmap(sellerInfo.getSellerImage(),
+                R.drawable.default_img, (ImageView) findViewById(R.id.ivSellerImage));
     }
 
     @Override
