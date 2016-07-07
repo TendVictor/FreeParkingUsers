@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.chen.freeparkingusers.R;
+import com.example.chen.freeparkingusers.net.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,9 +38,13 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.MyViewHold
     public void onBindViewHolder(final MyViewHolder holder, int position) {
 
          //设置显示数据集
+         HashMap<String,String> tmp = dataSet.get(position);
+         holder.tv_name.setText(tmp.get("activity_name"));
+         holder.tv_address.setText(tmp.get("seller_name"));
+         String img_url = tmp.get("activity_img");
+         ImageLoader.build(context).bindBitmap(img_url,R.drawable.default_img,holder.iv_activity);
 
-
-         //添加时间监听事件
+        //添加时间监听事件
         if(onItemClickListener != null){
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

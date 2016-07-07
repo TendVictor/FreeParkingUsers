@@ -2,6 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
    >
    <android.support.v4.widget.SwipeRefreshLayout
        android:layout_width="match_parent"
@@ -15,4 +17,30 @@
            android:background="#f8f8f8">
        </android.support.v7.widget.RecyclerView>
    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_nodata_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
+        <TextView
+            android:id="@+id/tv_NoData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="NoData"
+            android:textColor="#000"
+            android:textSize="44sp"
+            />
+        <Button
+            android:id="@+id/btn_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="refresh_wtf"
+            android:textSize="44sp"
+            android:onClick="r"
+            />
+    </LinearLayout>
 </LinearLayout>
