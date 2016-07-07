@@ -11,14 +11,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-
-
 import com.example.chen.freeparkingusers.R;
 import com.example.chen.freeparkingusers.item.CampaignInfo;
 import com.example.chen.freeparkingusers.item.SellerInfo;
