@@ -53,6 +53,7 @@ public class TicketAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
              HashMap<String,String> tmp = dataSet.get(position);
              ((ItemViewHolder)holder).tv_name.setText(tmp.get("activity_name"));
              ((ItemViewHolder)holder).tv_address.setText(tmp.get("seller_name"));
+             ((ItemViewHolder)holder).tv_deadline.setText("使用日期 "+tmp.get("ticket_deadline"));
              String img_url = tmp.get("activity_img");
              ImageLoader.getInstance(context).bindBitmap(img_url,R.drawable.default_img,((ItemViewHolder)holder).iv_activity);
 

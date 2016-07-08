@@ -17,7 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.chen.freeparkingusers.R;
-import com.example.chen.freeparkingusers.activity.LoginActivity;
+import com.example.chen.freeparkingusers.activity.QRCodeActivity;
 import com.example.chen.freeparkingusers.adapter.TicketAdapter;
 import com.example.chen.freeparkingusers.net.Config;
 import com.example.chen.freeparkingusers.net.NetPostConnection;
@@ -72,8 +72,7 @@ public class ticketFragment extends BaseFragment {
             @Override
             public void onItemClick(View view, int position) {
                 //传递数据
-//                Intent i = new Intent(getActivity(), QRCodeActivity.class);
-                Intent i = new Intent(getActivity(), LoginActivity.class);
+                Intent i = new Intent(getActivity(), QRCodeActivity.class);
                 i.putExtra("ticket_id", dataSet.get(position).get("ticket_id"));
                 startActivity(i);
             }
@@ -108,7 +107,10 @@ public class ticketFragment extends BaseFragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                FetchTicketData();
+                if(!mScrollListener.isLoadingMore())
+                   FetchTicketData();
+                else
+                   swipeRefreshLayout.setRefreshing(false);
             }
         });
 
@@ -160,9 +162,11 @@ public class ticketFragment extends BaseFragment {
                 case NET_FAILURE:
                     break;
                 case LOADMORE:
+
                     mScrollListener.setLoadingMore(false);
                     mScrollListener.setHasMore(false);
                     mScrollListener.resetFootView();
+
                     break;
             }
         }
@@ -223,6 +227,11 @@ public class ticketFragment extends BaseFragment {
         boolean isLoadingMore = false;
         boolean hasMore = true;
 
+
+        public boolean isLoadingMore() {
+            return isLoadingMore;
+        }
+
         public void setLoadingMore(boolean loadingMore) {
             isLoadingMore = loadingMore;
         }
@@ -238,7 +247,7 @@ public class ticketFragment extends BaseFragment {
                 fvh.tv.setText("上拉加载");
                 fvh.pb.setVisibility(View.GONE);
             } else {
-                TicketAdapter.FootViewHolder fvh = (TicketAdapter.FootViewHolder) recyclerView.findViewHolderForLayoutPosition(lastVisibleItemPosition);
+                TicketAdapter.FootViewHolder fvh = (TicketAdapter.FootViewHolder) recyclerView.findViewHolderForLayoutPosition(ticketAdapter.getItemCount()-1);
                 //界面展示
                 fvh.tv.setText("没有更多数据了");
                 fvh.pb.setVisibility(View.GONE);
@@ -248,9 +257,15 @@ public class ticketFragment extends BaseFragment {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
+
+//            resetFootView();
+
             if (hasMore && newState == RecyclerView.SCROLL_STATE_IDLE && ticketAdapter.getItemCount() != 1 &&
                     lastVisibleItemPosition == ticketAdapter.getItemCount() - 1) {
                 if (!isLoadingMore) {
+
+                    isLoadingMore = true;
+
                     TicketAdapter.FootViewHolder fvh = (TicketAdapter.FootViewHolder) recyclerView.findViewHolderForLayoutPosition(lastVisibleItemPosition);
                     //界面展示
                     fvh.tv.setText("加载更多中=。=");
@@ -269,7 +284,6 @@ public class ticketFragment extends BaseFragment {
                         }
                     }.start();
 
-                    isLoadingMore = true;
                 }
             }
         }
@@ -277,6 +291,7 @@ public class ticketFragment extends BaseFragment {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
+
             lastVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
         }
     }
