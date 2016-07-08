@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by chen on 16/7/4.
+ * Created by ran on 16/7/4.
  */
 public class ticketFragment extends BaseFragment {
 
@@ -46,38 +46,40 @@ public class ticketFragment extends BaseFragment {
     private LinearLayout llContainer = null;
 
     //4 test
-    private Button btnTest =  null;
+    private Button btnTest = null;
     private String username = "sb";
 
+
+    private MyScrollListener mScrollListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle SavedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ticket, null, false);
-        initViewAndEvents(view);
         initData();
         initVariables();
+        initViewAndEvents(view);
         return view;
     }
 
     private void initData() {
-         dataSet = new ArrayList<HashMap<String, String>>();
-         swipeRefreshLayout.setRefreshing(true);
-         FetchTicketData();
+        dataSet = new ArrayList<HashMap<String, String>>();
+        FetchTicketData();
     }
 
     private void initVariables() {
-        ticketAdapter = new TicketAdapter(getActivity(),dataSet);
+        ticketAdapter = new TicketAdapter(getActivity(), dataSet);
         ticketAdapter.setOnItemClickListener(new TicketAdapter.onItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 //传递数据
                 Intent i = new Intent(getActivity(), QRCodeActivity.class);
-                i.putExtra("ticket_id",dataSet.get(position).get("ticket_id"));
+                i.putExtra("ticket_id", dataSet.get(position).get("ticket_id"));
                 startActivity(i);
             }
+
             @Override
             public void onItemLongClick(View view, int position) {
-                Log.e(TAG,"Long click from TicFrg");
+                Log.e(TAG, "Long click from TicFrg");
             }
         });
     }
@@ -85,7 +87,7 @@ public class ticketFragment extends BaseFragment {
     private void initViewAndEvents(View view) {
 
         //test
-        btnTest = $(view,R.id.btn_refresh);
+        btnTest = $(view, R.id.btn_refresh);
         btnTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,13 +96,14 @@ public class ticketFragment extends BaseFragment {
             }
         });
 
-        llContainer = $(view,R.id.ll_nodata_container);
+        llContainer = $(view, R.id.ll_nodata_container);
         recyclerView = $(view, R.id.rv_ticket);
         swipeRefreshLayout = $(view, R.id.sl_ticket);
         swipeRefreshLayout.setColorSchemeColors(Color.parseColor("#2CBEC5"));
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL_LIST));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
+        recyclerView.setAdapter(ticketAdapter);
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -108,15 +111,19 @@ public class ticketFragment extends BaseFragment {
                 FetchTicketData();
             }
         });
+
+        mScrollListener = new MyScrollListener();
+        recyclerView.addOnScrollListener(mScrollListener);
     }
 
-    public void FetchTicketData(){
+    public static final int LOADMORE = 0x120;
+    public void FetchTicketData() {
         new NetPostConnection(Config.URL_GET_ALLTICKETS, new NetPostConnection.SuccessCallback() {
             @Override
             public void onSuccess(String result) throws JSONException {
                 Message msg = new Message();
                 msg.obj = result;
-                msg.what= NET_SUCCESS;
+                msg.what = NET_SUCCESS;
                 handler.sendMessage(msg);
             }
         }, new NetPostConnection.FailCallback() {
@@ -124,54 +131,69 @@ public class ticketFragment extends BaseFragment {
             public void onFail() {
                 handler.sendEmptyMessage(NET_FAILURE);
             }
-        },new Object[]{
-             "user_id",username
+        }, new Object[]{
+                "user_id", username
         });
     }
-    private Handler handler = new Handler(){
+
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
+            switch (msg.what) {
                 case NET_SUCCESS:
                     swipeRefreshLayout.setRefreshing(false);
                     String result = (String) msg.obj;
-                    Log.e("TAG",result);
                     parseJsonInfo(result);
 
-                    recyclerView.setAdapter(ticketAdapter);
+                    ticketAdapter.notifyDataSetChanged();
+
+                    mScrollListener.setHasMore(true);
+
+                    LinearLayoutManager llLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                    if (llLayoutManager.findFirstVisibleItemPosition() == 0
+                     && llLayoutManager.findLastCompletelyVisibleItemPosition() == ticketAdapter.getItemCount()-1){
+                        mScrollListener.setHasMore(false);
+                        mScrollListener.resetFootView();
+                    }
+
                     break;
                 case NET_FAILURE:
+                    break;
+                case LOADMORE:
+                    mScrollListener.setLoadingMore(false);
+                    mScrollListener.setHasMore(false);
+                    mScrollListener.resetFootView();
                     break;
             }
         }
     };
 
-    private void SetViewVisible(int state){
-        if(state == View.GONE){
+    private void SetViewVisible(int state) {
+        if (state == View.GONE) {
             llContainer.setVisibility(View.GONE);
             swipeRefreshLayout.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             swipeRefreshLayout.setVisibility(View.GONE);
             llContainer.setVisibility(View.VISIBLE);
         }
     }
+
     private void parseJsonInfo(String result) {
-        if(result.contains("\"state\":")){
-             if(result.contains("0")){
-                 //这里是没有数据的展示
-                 SetViewVisible(View.VISIBLE);
-             }
-             else if(result.contains("2")){
-                 Toast.makeText(getActivity(),"服务器异常",Toast.LENGTH_SHORT).show();
-             }
-        }else{
+        if (result.contains("\"state\":")) {
+            if (result.contains("0")) {
+                //这里是没有数据的展示
+                SetViewVisible(View.VISIBLE);
+            } else if (result.contains("2")) {
+                Toast.makeText(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show();
+            }
+        } else {
             try {
                 SetViewVisible(View.GONE);
                 dataSet.clear();
                 JSONArray array = new JSONArray(result);
-                for (int i=0;i<array.length();i++){
+                for (int i = 0; i < array.length(); i++) {
                     JSONObject tmpObj = (JSONObject) array.get(i);
-                    HashMap<String,String> tmp = new HashMap<String, String>();
+                    HashMap<String, String> tmp = new HashMap<String, String>();
 
                     tmp.put("ticket_id", (String) tmpObj.get("ticket_id"));
                     tmp.put("seller_name", (String) tmpObj.get("seller_name"));
@@ -189,8 +211,73 @@ public class ticketFragment extends BaseFragment {
 
     private static final int NET_SUCCESS = 0x123;
     private static final int NET_FAILURE = 0x110;
+
     private <T extends View> T $(View v, int id) {
         return (T) v.findViewById(id);
     }
 
+
+    class MyScrollListener extends RecyclerView.OnScrollListener {
+
+        int lastVisibleItemPosition;
+        boolean isLoadingMore = false;
+        boolean hasMore = true;
+
+        public void setLoadingMore(boolean loadingMore) {
+            isLoadingMore = loadingMore;
+        }
+
+        public void setHasMore(boolean hasMore) {
+            this.hasMore = hasMore;
+        }
+
+        public void resetFootView() {
+            if (hasMore) {
+                TicketAdapter.FootViewHolder fvh = (TicketAdapter.FootViewHolder) recyclerView.findViewHolderForLayoutPosition(lastVisibleItemPosition);
+                //界面展示
+                fvh.tv.setText("上拉加载");
+                fvh.pb.setVisibility(View.GONE);
+            } else {
+                TicketAdapter.FootViewHolder fvh = (TicketAdapter.FootViewHolder) recyclerView.findViewHolderForLayoutPosition(lastVisibleItemPosition);
+                //界面展示
+                fvh.tv.setText("没有更多数据了");
+                fvh.pb.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+            if (hasMore && newState == RecyclerView.SCROLL_STATE_IDLE && ticketAdapter.getItemCount() != 1 &&
+                    lastVisibleItemPosition == ticketAdapter.getItemCount() - 1) {
+                if (!isLoadingMore) {
+                    TicketAdapter.FootViewHolder fvh = (TicketAdapter.FootViewHolder) recyclerView.findViewHolderForLayoutPosition(lastVisibleItemPosition);
+                    //界面展示
+                    fvh.tv.setText("加载更多中=。=");
+                    fvh.pb.setVisibility(View.VISIBLE);
+
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            super.run();
+                            try {
+                                sleep(3000);
+                                handler.sendEmptyMessage(LOADMORE);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }.start();
+
+                    isLoadingMore = true;
+                }
+            }
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            lastVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+        }
+    }
 }

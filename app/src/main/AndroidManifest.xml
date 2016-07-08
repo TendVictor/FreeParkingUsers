@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.chen.freeparkingusers">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -21,13 +21,14 @@
         </activity>
         <activity
             android:name=".activity.SellerSearchActivity"
-            android:theme="@style/Anim_fade"></activity>
+            android:theme="@style/Anim_fade" />
         <activity android:name=".activity.UserInfoDetailActivity" />
         <activity
             android:name=".activity.QRCodeActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity android:name=".activity.SellerDetailActivity" />
         <activity android:name=".activity.CampaignDetailActivity" />
+        <activity android:name=".activity.LoginActivity"></activity>
     </application>
 
 </manifest>
