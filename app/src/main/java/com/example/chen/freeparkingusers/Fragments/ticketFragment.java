@@ -74,6 +74,8 @@ public class ticketFragment extends BaseFragment {
                 //传递数据
                 Intent i = new Intent(getActivity(), QRCodeActivity.class);
                 i.putExtra("ticket_id", dataSet.get(position).get("ticket_id"));
+                i.putExtra("seller_name",dataSet.get(position).get("seller_name"));
+                i.putExtra("ticket_deadline",dataSet.get(position).get("ticket_deadline"));
                 startActivity(i);
             }
 
@@ -107,10 +109,7 @@ public class ticketFragment extends BaseFragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if(!mScrollListener.isLoadingMore())
                    FetchTicketData();
-                else
-                   swipeRefreshLayout.setRefreshing(false);
             }
         });
 
@@ -155,7 +154,6 @@ public class ticketFragment extends BaseFragment {
                     if (llLayoutManager.findFirstVisibleItemPosition() == 0
                      && llLayoutManager.findLastCompletelyVisibleItemPosition() == ticketAdapter.getItemCount()-1){
                         mScrollListener.setHasMore(false);
-                        mScrollListener.resetFootView();
                     }
 
                     break;
@@ -163,9 +161,12 @@ public class ticketFragment extends BaseFragment {
                     break;
                 case LOADMORE:
 
-                    mScrollListener.setLoadingMore(false);
                     mScrollListener.setHasMore(false);
-                    mScrollListener.resetFootView();
+
+                    if(mScrollListener.isLoadingMore()){
+                        mScrollListener.resetFootView();
+                        mScrollListener.setLoadingMore(false);
+                    }
 
                     break;
             }
@@ -291,8 +292,12 @@ public class ticketFragment extends BaseFragment {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
-
             lastVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+            if(lastVisibleItemPosition >= ticketAdapter.getItemCount()-1)
+            resetFootView();
+            else {
+                isLoadingMore = false;
+            }
         }
     }
 }
