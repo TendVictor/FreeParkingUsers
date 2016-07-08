@@ -1,54 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_userinfo">
+    android:background="@drawable/bg_userinfo"
+    android:orientation="vertical">
 
     <RelativeLayout
-        android:background="@color/colorTitleBar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        >
+        android:background="@color/colorTitleBar">
 
         <ImageView
-            android:layout_centerInParent="true"
-            android:layout_alignParentLeft="true"
             android:layout_width="14dp"
             android:layout_height="24dp"
-            android:background="@drawable/back_btn_img"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
             android:layout_marginLeft="16dp"
-            />
+            android:background="@drawable/back_btn_img" />
 
         <TextView
-            android:gravity="center_horizontal"
-            android:layout_centerInParent="true"
             android:layout_width="wrap_content"
             android:layout_height="24dp"
+            android:layout_centerInParent="true"
+            android:gravity="center_horizontal"
+            android:text="@string/title_userInfo"
             android:textColor="@color/colorTitleText"
-            android:textSize="20sp"
-            android:text="@string/title_userInfo"/>
+            android:textSize="20sp" />
 
     </RelativeLayout>
-    
+
     <View
-        android:layout_marginTop="2dp"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#a8e4e6"/>
+        android:layout_marginTop="2dp"
+        android:background="#a8e4e6" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="180dp">
 
         <ImageView
-            android:scaleType="fitXY"
             android:layout_width="100dp"
             android:layout_height="100dp"
+            android:layout_centerInParent="true"
             android:background="@drawable/iv_userinfo_addimg"
-            android:layout_centerInParent="true"/>
+            android:scaleType="fitXY" />
 
     </RelativeLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@color/colorItemBackground">
+
+        <TextView
+            android:padding="16dp"
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:gravity="center|left"
+            android:text="用户id"
+            android:textColor="@color/titleColorUserInfo"
+            android:textSize="21sp" />
+
+        <TextView
+
+            android:padding="8dp"
+            android:id="@+id/tv_showid_userinfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center|left"
+            android:text="dlx"
+            android:textColor="@color/textColorUserInfo"
+            android:textSize="21sp"
+            />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@color/colorItemBackground">
+
+        <TextView
+            android:padding="16dp"
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:gravity="center|left"
+            android:text="用户昵称"
+            android:textColor="@color/titleColorUserInfo"
+            android:textSize="21sp" />
+
+        <TextView
+            android:padding="8dp"
+            android:id="@+id/tv_showname_userinfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center|left"
+            android:text="丁龙翔"
+            android:textColor="@color/textColorUserInfo"
+            android:textSize="21sp"
+            />
+
+
+    </LinearLayout>
 
 
 </LinearLayout>

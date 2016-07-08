@@ -1,5 +1,6 @@
 package com.example.chen.freeparkingusers.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.chen.freeparkingusers.R;
+import com.example.chen.freeparkingusers.activity.SellerDetailActivity;
 import com.example.chen.freeparkingusers.adapter.SellerAdapter;
 import com.example.chen.freeparkingusers.item.SellerInfo;
 import com.example.chen.freeparkingusers.net.Config;
@@ -32,6 +34,7 @@ public class SellerFragment extends BaseFragment{
 
     private SellerAdapter.FootViewHolder footHolder;
     private boolean isLoading = false;
+    private boolean loadingAble = true;
 
     private int last = 0;
     private int totalItemCount = 0;
@@ -52,7 +55,7 @@ public class SellerFragment extends BaseFragment{
         @Override
         public void handleMessage(Message msg){
             switch (msg.what){
-                case 0x0:
+                case 0x0://加载更多跟刷新数据
                     number_limit+=10;
                     totalItemCount = mDatas.size();
                     break;
@@ -70,6 +73,10 @@ public class SellerFragment extends BaseFragment{
                     isLoading = false;
                     break;
             }
+            if(footHolder == null)
+                footHolder = (SellerAdapter.FootViewHolder)
+                        mRecyclerView.findViewHolderForAdapterPosition(totalItemCount - 1);
+
             mSellerAdapter.notifyDataSetChanged();
             mSwipeLayout.setRefreshing(false);
         }
@@ -87,18 +94,12 @@ public class SellerFragment extends BaseFragment{
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView,int newstate){
-                super.onScrollStateChanged(recyclerView,newstate);
-                Log.d("loadmoreBefore",isLoading+"");
-                if (last >= totalItemCount-1&& !isLoading) {
+            public void onScrollStateChanged(RecyclerView recyclerView, int newstate) {
+                super.onScrollStateChanged(recyclerView, newstate);
+                Log.d("loadmoreBefore", isLoading + "");
+                if (last >= totalItemCount - 1 && !isLoading && loadingAble) {
                     isLoading = true;
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadmore();
-                            Log.d("loadmore","loadmore");
-                        }
-                    },3000);
+                    loadmore();
                 }
             }
 
@@ -106,6 +107,13 @@ public class SellerFragment extends BaseFragment{
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 last = mLayoutManager.findLastCompletelyVisibleItemPosition();
+                Log.d("second1", mLayoutManager.findLastVisibleItemPosition()+"  "+mLayoutManager.getChildCount());
+                if(mRecyclerView.getChildAt(mLayoutManager.getChildCount()) != null){
+                    Log.d("second","1");
+                    if(mSellerAdapter.getItemViewType(mLayoutManager.findLastVisibleItemPosition()) == 2){
+                       Log.d("height", mRecyclerView.getChildAt(mLayoutManager.findLastVisibleItemPosition()).getHeight()+"");
+                    }
+                }
             }
         });
 
@@ -116,13 +124,30 @@ public class SellerFragment extends BaseFragment{
         getSellerInfo(search_word,number_limit);
 
         mSellerAdapter = new SellerAdapter(getActivity(), (ArrayList<SellerInfo>) mDatas);
+        mSellerAdapter.setOnItemClickListener(new SellerAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                SellerInfo seller_info = mDatas.get(position);
+                Intent intent = new Intent(getActivity(), SellerDetailActivity.class);
+                intent.putExtra("seller_info", seller_info);
+                startActivity(intent);
+            }
+        });
+
         mRecyclerView.setAdapter(mSellerAdapter);
+
         return view;
     }
 
     //滑动底层加载更多
     public void loadmore(){
-        getSellerInfo(search_word, number_limit);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("loadmore", "loadmore");
+                getSellerInfo(search_word, number_limit);
+            }
+        }, 3000);
     }
 
     public void nomoreData(){
@@ -133,6 +158,7 @@ public class SellerFragment extends BaseFragment{
                     (SellerAdapter.FootViewHolder) mRecyclerView.findViewHolderForAdapterPosition(totalItemCount-1);
             footHolder.setIsHaveData(true);
         }
+        loadingAble = false;
     }
 
     //恢复刷新之前的状态
@@ -143,6 +169,8 @@ public class SellerFragment extends BaseFragment{
         }
         mDatas.clear();
         number_limit = 0;
+        isLoading = false;
+        loadingAble = true;
         getSellerInfo(search_word,number_limit);
     }
 

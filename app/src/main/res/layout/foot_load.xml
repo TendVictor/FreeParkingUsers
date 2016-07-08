@@ -15,10 +15,12 @@
         />
 
     <ProgressBar
+        android:layout_alignTop="@id/tv_loadmore"
+        android:layout_alignBottom="@id/tv_loadmore"
         android:layout_toLeftOf="@id/tv_loadmore"
         android:layout_centerInParent="true"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/pb_foot_loadmore"
         android:gravity="center"/>
 
