@@ -17,7 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.chen.freeparkingusers.R;
-import com.example.chen.freeparkingusers.activity.QRCodeActivity;
+import com.example.chen.freeparkingusers.activity.LoginActivity;
 import com.example.chen.freeparkingusers.adapter.TicketAdapter;
 import com.example.chen.freeparkingusers.net.Config;
 import com.example.chen.freeparkingusers.net.NetPostConnection;
@@ -72,7 +72,8 @@ public class ticketFragment extends BaseFragment {
             @Override
             public void onItemClick(View view, int position) {
                 //传递数据
-                Intent i = new Intent(getActivity(), QRCodeActivity.class);
+//                Intent i = new Intent(getActivity(), QRCodeActivity.class);
+                Intent i = new Intent(getActivity(), LoginActivity.class);
                 i.putExtra("ticket_id", dataSet.get(position).get("ticket_id"));
                 startActivity(i);
             }
@@ -85,7 +86,6 @@ public class ticketFragment extends BaseFragment {
     }
 
     private void initViewAndEvents(View view) {
-
         //test
         btnTest = $(view, R.id.btn_refresh);
         btnTest.setOnClickListener(new View.OnClickListener() {
@@ -233,7 +233,7 @@ public class ticketFragment extends BaseFragment {
 
         public void resetFootView() {
             if (hasMore) {
-                TicketAdapter.FootViewHolder fvh = (TicketAdapter.FootViewHolder) recyclerView.findViewHolderForLayoutPosition(lastVisibleItemPosition);
+                TicketAdapter.FootViewHolder fvh = (TicketAdapter.FootViewHolder) recyclerView.findViewHolderForLayoutPosition(ticketAdapter.getItemCount()-1);
                 //界面展示
                 fvh.tv.setText("上拉加载");
                 fvh.pb.setVisibility(View.GONE);
