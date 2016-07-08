@@ -92,6 +92,6 @@ public class UserInfoDetailActivity extends AppCompatActivity implements View.On
 
     //上传用户图片
     private void updateUserImg(){
-        
+//        new NetPostConnection("")
     }
 }
