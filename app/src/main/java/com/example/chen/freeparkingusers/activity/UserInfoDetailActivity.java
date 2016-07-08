@@ -26,6 +26,11 @@ import android.widget.Toast;
 import com.example.chen.freeparkingusers.R;
 import com.example.chen.freeparkingusers.net.Config;
 import com.example.chen.freeparkingusers.net.NetPostConnection;
+import com.qiniu.android.http.ResponseInfo;
+import com.qiniu.android.storage.UpCompletionHandler;
+import com.qiniu.android.storage.UpProgressHandler;
+import com.qiniu.android.storage.UploadManager;
+import com.qiniu.android.storage.UploadOptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,12 +49,17 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
 
     public static final int SELECT_PIC_BY_PICK_PHOTO = 2;
 
-    private static final String IMAGE_FILE_NAME = "temp_head_image.jpg";
+    public static final int CROP_BY_CAMERA = 3;
+
+    private int output_X = 480;
+    private int output_Y = 480;
+
+    private static final String IMAGE_FILE_NAME = "temp.jpg";
 
     private Bitmap bitmap;
 
     private Uri photoUri;
-    private String picturePath;
+    private Uri cameraUri;
     private Intent lastIntent;
 
     private String tokens = null;
@@ -68,8 +78,8 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
                 case 0x1://获取token失败
                     Toast.makeText(UserInfoDetailActivity.this, "获取token失败", Toast.LENGTH_SHORT).show();
                     break;
-                case 0x2://获取成功
-
+                case 0x2://获取token成功
+                    uploadUsrImg();
                     break;
                 case 0x3://网络原因
                     Toast.makeText(UserInfoDetailActivity.this, "网络原因获取失败", Toast.LENGTH_SHORT).show();
@@ -152,13 +162,30 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
 
     //选择拍照
     private void takePhoto() {
+
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         String sdState = Environment.getExternalStorageState();
-        if(sdState.equalsIgnoreCase(Environment.MEDIA_MOUNTED)){
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(
-                    new File(Environment.getExternalStorageDirectory(),IMAGE_FILE_NAME)));
+        if (sdState.equalsIgnoreCase(Environment.MEDIA_MOUNTED)) {
+            File toFile = new File(Environment.getExternalStorageDirectory(), IMAGE_FILE_NAME);
+            try {
+                if (!toFile.exists())
+                    toFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            cameraUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory()
+                    , IMAGE_FILE_NAME));
+            Log.d("cameraUri", cameraUri + "");
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
         }
-        startActivityForResult(intent,SELECT_PIC_BY_TAKE_PHOTO);
+
+        startActivityForResult(intent, SELECT_PIC_BY_TAKE_PHOTO);
+
+//        File file = new File(Environment.getExternalStorageDirectory() + IMAGE_FILE_NAME);
+//        cameraUri = Uri.fromFile(file);
+//        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
+//        startActivityForResult(intent, SELECT_PIC_BY_TAKE_PHOTO);
     }
 
     //选择本地图片
@@ -172,18 +199,74 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
-            case SELECT_PIC_BY_PICK_PHOTO:
-                if (resultCode == Activity.RESULT_OK) {
-                    pictureFromLocal(data);
-                    applyforToken();
-                }
-                break;
-            case SELECT_PIC_BY_TAKE_PHOTO:
-                pictureFromLocal(data);
-                break;
+        if (data != null) {
+            switch (requestCode) {
+                case SELECT_PIC_BY_PICK_PHOTO:
+                    if (resultCode == Activity.RESULT_OK) {
+                        pictureFromLocal(data);
+                        applyforToken();
+                    }
+                    break;
+                case SELECT_PIC_BY_TAKE_PHOTO:
+                    pictureFromTakingPhoto();
+                    break;
+                case CROP_BY_CAMERA://裁剪
+//                    finishCrop(data);
+                    break;
+            }
+        } else {
+//            if(requestCode == SELECT_PIC_BY_TAKE_PHOTO && cameraUri != null){
+//                startCropImage(cameraUri);
+//            }else if(requestCode == CROP_BY_CAMERA && cameraUri != null){
+            Log.d("here", "here");
+//                try {
+//                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), cameraUri);
+//                    RoundedBitmapDrawable roundedBitmapDrawable =
+//                            RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+//                    roundedBitmapDrawable.setCornerRadius(bitmap.getWidth()/2);
+//                    ivUserImg.setImageDrawable(roundedBitmapDrawable);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+
+
+//                RoundedBitmapDrawable roundedBitmapDrawable =
+//                        RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+//                roundedBitmapDrawable.setCornerRadius(bitmap.getWidth()/2);
+//                ivUserImg.setImageDrawable(roundedBitmapDrawable);
+//            }
         }
 
+    }
+
+    //上传使用七牛云
+    private void uploadUsrImg() {
+        try {
+            ByteArrayOutputStream output = new ByteArrayOutputStream();//初始化一个流对象
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);//把bitmap100%高质量压缩 到 output对象里
+
+            bitmap.recycle();//自由选择是否进行回收
+
+
+            byte[] result = output.toByteArray();//转换成功了try {
+            output.close();
+
+            UploadManager uploadManager = new UploadManager();
+            uploadManager.put(result, "user", tokens, new UpCompletionHandler() {
+                @Override
+                public void complete(String key, ResponseInfo info, JSONObject response) {
+                    Log.i("qiniu", key + ",\r\n " + info + ",\r\n " + response);
+                }
+            }, new UploadOptions(null, null, false, new UpProgressHandler() {
+                @Override
+                public void progress(String key, double percent) {
+
+                }
+            },null));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -220,12 +303,14 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
 
             @Override
             public void onSuccess(String result) throws JSONException {
+//                Log.d("onSuccess", result + "");
                 if (result.equalsIgnoreCase("1")) {
                     handler.obtainMessage(0x1).sendToTarget();
                     return;
                 }
                 JSONObject object = new JSONObject(result);
-                tokens = object.get("token").toString();
+                tokens = object.get("uptoken").toString();
+                Log.d("tokens", tokens + "");
                 if (tokens != null) {
                     handler.obtainMessage(0x2).sendToTarget();
                 }
@@ -238,26 +323,57 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         }, "", "");
     }
 
-    //设置从拍照中获取
-    private void pictureFromTakingPhoto(Intent data) {
+    //裁剪图片
+    private void finishCrop(Intent intent) {
+        if (intent != null) {
+            Bundle extras = intent.getExtras();
+            Bitmap bitmap = extras.getParcelable("data");
 
+            RoundedBitmapDrawable roundedBitmapDrawable =
+                    RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+            roundedBitmapDrawable.setCornerRadius(bitmap.getWidth() / 2);
+            ivUserImg.setImageDrawable(roundedBitmapDrawable);
+        }
+    }
+
+    //设置从拍照中获取
+    private void pictureFromTakingPhoto() {
+        File tempFile = new File(Environment.getExternalStorageDirectory(), IMAGE_FILE_NAME);
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(Uri.fromFile(tempFile), "image/*");
+
+//        Log.d("tempFile",tempFile.)
+        // 设置裁剪
+        intent.putExtra("crop", "true");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tempFile));
+
+
+        // aspectX , aspectY :宽高的比例
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+
+        // outputX , outputY : 裁剪图片宽高
+        intent.putExtra("outputX", output_X);
+        intent.putExtra("outputY", output_Y);
+        intent.putExtra("return-data", false);
+
+        startActivityForResult(intent, CROP_BY_CAMERA);
     }
 
 
     //上传图片
     private void pictureFromLocal(Intent data) {
-            if (data == null) {
-                Toast.makeText(this, "选择图片文件出错1", Toast.LENGTH_SHORT).show();
+        if (data == null) {
+            Toast.makeText(this, "选择图片文件出错1", Toast.LENGTH_SHORT).show();
+            return;
+        } else {
+            photoUri = data.getData();
+            if (photoUri == null) {
+                Toast.makeText(this, "选择图片文件出错2", Toast.LENGTH_SHORT).show();
                 return;
-            } else {
-                photoUri = data.getData();
-                if (photoUri == null) {
-                    Toast.makeText(this, "选择图片文件出错2", Toast.LENGTH_SHORT).show();
-                    return;
-                }
             }
+        }
         Log.i("photoUri", "photoUri= " + photoUri);
-        Bitmap bitmap = null;
 
         RoundedBitmapDrawable roundedBitmapDrawable = null;
 
@@ -292,7 +408,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
             // Method 3
         }
         roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-        roundedBitmapDrawable.setCornerRadius(bitmap.getWidth()/2);
+        roundedBitmapDrawable.setCornerRadius(bitmap.getWidth() / 2);
         ivUserImg.setImageDrawable(roundedBitmapDrawable);
 
 
@@ -300,6 +416,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
 
     /**
      * 裁减图片操作
+     *
      * @param uri
      */
     private void startCropImage(Uri uri) {
@@ -313,23 +430,22 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         // 让裁剪框支持缩放
         intent.putExtra("scale", true);
         // 裁剪后图片的大小（注意和上面的裁剪比例保持一致）
-//        intent.putExtra("outputX", AndroidPlatformUtil.dpToPx(this, 120));
-//        intent.putExtra("outputY", AndroidPlatformUtil.dpToPx(this, 80));
+        intent.putExtra("outputX", output_X);
+        intent.putExtra("outputY", output_Y);
         // 传递原图路径
-//        File cropFile = new File(Environment.getExternalStorageDirectory() + "crop_image.jpg");
-//        cropImageUri = Uri.fromFile(cropFile);
-//        intent.putExtra(MediaStore.EXTRA_OUTPUT, cropImageUri);
+        File cropFile = new File(Environment.getExternalStorageDirectory() + IMAGE_FILE_NAME);
+        Uri cropImageUri = Uri.fromFile(cropFile);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, cropImageUri);
         // 设置裁剪区域的形状，默认为矩形，也可设置为原形
-        //intent.putExtra("circleCrop", true);
+//        intent.putExtra("circleCrop", true);
         // 设置图片的输出格式
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         // return-data=true传递的为缩略图，小米手机默认传递大图，所以会导致onActivityResult调用失败
         intent.putExtra("return-data", false);
         // 是否需要人脸识别
 //        intent.putExtra("noFaceDetection", true);
-//        startActivityForResult(intent, REQUEST_CODE_CROP_IMAGE);
+        startActivityForResult(intent, CROP_BY_CAMERA);
     }
-
 
 
 }
