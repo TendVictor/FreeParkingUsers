@@ -20,6 +20,8 @@ import java.util.ArrayList;
  */
 public class SellerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private onItemClickListener mOnItemClickListener = null;
+
     private final int BODY_TYPE = 1;
     private final int FOOT_TYPE = 2;
 
@@ -71,7 +73,7 @@ public class SellerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         switch (getItemViewType(position)) {
             case BODY_TYPE:
                 ((myViewHolder) holder).name.setText(mDatas.get(position).getSellerName());
@@ -81,17 +83,35 @@ public class SellerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         (mDatas.get(position).getSellerImage(),
                                 R.drawable.default_img,
                                 ((myViewHolder) holder).image);
+
+                ((myViewHolder) holder).itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int pos = position;
+                        mOnItemClickListener.onItemClick(v,pos);
+                    }
+                });
                 break;
             case FOOT_TYPE:
-                if(((FootViewHolder) holder).isNoData){
+                if (((FootViewHolder) holder).isNoData) {
                     ((FootViewHolder) holder).tv_foot.setText("没有其他数据");
                     ((FootViewHolder) holder).pb_foot.setVisibility(View.GONE);
-                }else{
+                } else {
                     ((FootViewHolder) holder).tv_foot.setText("加载更多");
                     ((FootViewHolder) holder).pb_foot.setVisibility(View.VISIBLE);
                 }
                 break;
         }
+    }
+
+    //暴露在外的接口
+    public void setOnItemClickListener(SellerAdapter.onItemClickListener mOnItemClickListener) {
+        this.mOnItemClickListener = mOnItemClickListener;
+    }
+
+
+    public interface onItemClickListener {
+        void onItemClick(View view, int position);
     }
 
     class myViewHolder extends RecyclerView.ViewHolder {
@@ -114,7 +134,7 @@ public class SellerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public ProgressBar pb_foot;
         public boolean isNoData = false;
 
-        public void setIsHaveData(boolean isNoData){
+        public void setIsHaveData(boolean isNoData) {
             this.isNoData = isNoData;
         }
 
