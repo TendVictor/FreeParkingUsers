@@ -1,4 +1,4 @@
-package com.example.pants.freeparkingtest.view;
+package com.example.chen.freeparkingusers.view;
 
 import android.annotation.TargetApi;
 import android.content.Context;
