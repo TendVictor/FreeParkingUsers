@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Created by dell-pc on 2015/12/26.
+ * Created by Pantsu on 2015/12/26.
  */
 public class ImageLoader {
 
