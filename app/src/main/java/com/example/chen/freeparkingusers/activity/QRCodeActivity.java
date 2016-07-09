@@ -15,6 +15,8 @@ public class QRCodeActivity extends AppCompatActivity {
 
     private static  final String TAG = "QRCAct";
     private String ticket_id = null;
+    private String seller_name = null;
+    private String ticket_deadline = null;
 
     private TextView tvAddress = null;
     private TextView tvDeadline = null;
@@ -25,6 +27,8 @@ public class QRCodeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ticket_id = getIntent().getStringExtra("ticket_id");
+        seller_name = getIntent().getStringExtra("seller_name");
+        ticket_deadline = getIntent().getStringExtra("ticket_deadline");
         setContentView(R.layout.activity_qrcode);
         initView();
     }
@@ -33,6 +37,10 @@ public class QRCodeActivity extends AppCompatActivity {
         tvAddress = $(R.id.tv_address_detail);
         tvDeadline = $(R.id.tv_deadline_detail);
         ivQRCode = $(R.id.iv_qrcode);
+
+
+        tvAddress.setText(seller_name);
+        tvDeadline.setText(ticket_deadline);
 
         ivQRCode.setBackgroundDrawable(null);
         ivQRCode.setImageBitmap(generateQRCode());

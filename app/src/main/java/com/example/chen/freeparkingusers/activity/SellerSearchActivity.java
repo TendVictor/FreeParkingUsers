@@ -7,6 +7,9 @@ import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -28,6 +31,8 @@ import java.util.List;
  * Created by chen on 16/7/6.
  */
 public class SellerSearchActivity extends Activity implements View.OnClickListener{
+
+    private CharSequence searchTemp;
 
     private int number_limit = 0;
 
@@ -52,8 +57,12 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
                     break;
                 case 0x1:
                     break;
+                case 0x2:
+                    Log.d("Failed" , number_limit+"");
+                    searchDatas.clear();
+                    searchSellerAdapter.notifyDataSetChanged();
+                    break;
             }
-            searchSwipeLayout.setRefreshing(false);
         }
     };
 
@@ -73,9 +82,7 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
 
 
         backBtn.setOnClickListener(this);
-        searchEdit.setOnClickListener(this);
-
-//        searchEdit.setOn
+        searchEdit.addTextChangedListener(new mTextWatcher());
 
         searchSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_search);
         searchRecyclerView = (RecyclerView) findViewById(R.id.rv_search);
@@ -104,9 +111,6 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
             case R.id.iv_back:
                 finish();
                 break;
-            case R.id.ev_searchseller:
-//                startSearchSeller();
-                break;
         }
     }
 
@@ -117,6 +121,11 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
                 new NetPostConnection.SuccessCallback() {
                     @Override
                     public void onSuccess(String result) throws JSONException {
+
+                        if(result.equalsIgnoreCase("0")){
+                            handler.obtainMessage(0x2).sendToTarget();
+                            return;
+                        }
                         JSONArray jsonArray = new JSONArray(result);
                         searchDatas.clear();
                         for (int i = 0; i < jsonArray.length(); i++){
@@ -129,6 +138,7 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
                                     object.getString("seller_contact"));
                             searchDatas.add(info);
                         }
+                        Log.d("result1111", searchDatas.size()+"");
                         handler.obtainMessage(0x0).sendToTarget();
                     }
                 }, new NetPostConnection.FailCallback(){
@@ -147,6 +157,27 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
         @Override
         public void onRefresh() {
 
+        }
+    }
+
+
+    class mTextWatcher implements TextWatcher{
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            Log.d("Editbefore", searchTemp+"");
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            searchTemp = s;
+            Log.d("Editon", searchTemp+"");
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            Log.d("Editafter", searchTemp+"");
+            startSearchSeller(searchTemp.toString(), 0);
         }
     }
 

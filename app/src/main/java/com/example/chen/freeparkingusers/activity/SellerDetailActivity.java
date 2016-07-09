@@ -52,7 +52,7 @@ public class SellerDetailActivity extends Activity {
                         .setPositiveButton("重新获取", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                updateCampaignInfo(sellerInfo.getSellerId());
+                                  updateCampaignInfo(sellerInfo.getSellerId());
                                 dialog.dismiss();
                             }
                         }).create();

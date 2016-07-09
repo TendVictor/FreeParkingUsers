@@ -19,7 +19,8 @@
             android:layout_centerVertical="true"
             android:layout_margin="16dp"
             android:layout_weight="1.0"
-            android:background="@drawable/default_img" />
+            android:background="@drawable/default_img"
+            android:scaleType="fitXY"/>
 
         <LinearLayout
             android:layout_width="0dp"

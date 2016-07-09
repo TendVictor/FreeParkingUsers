@@ -1,54 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_userinfo">
+    android:background="@drawable/bg_userinfo"
+    android:orientation="vertical">
 
     <RelativeLayout
-        android:background="@color/colorTitleBar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        >
+        android:background="@color/colorTitleBar">
 
         <ImageView
-            android:layout_centerInParent="true"
-            android:layout_alignParentLeft="true"
+            android:id="@+id/iv_back_userinfo"
             android:layout_width="14dp"
             android:layout_height="24dp"
-            android:background="@drawable/back_btn_img"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
             android:layout_marginLeft="16dp"
-            />
+            android:background="@drawable/back_btn_img" />
 
         <TextView
-            android:gravity="center_horizontal"
-            android:layout_centerInParent="true"
             android:layout_width="wrap_content"
             android:layout_height="24dp"
+            android:layout_centerInParent="true"
+            android:gravity="center_horizontal"
+            android:text="@string/title_userInfo"
             android:textColor="@color/colorTitleText"
-            android:textSize="20sp"
-            android:text="@string/title_userInfo"/>
+            android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/iv_logout_userinfo"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="16dp"
+            android:background="@drawable/iv_logout" />
 
     </RelativeLayout>
-    
+
     <View
-        android:layout_marginTop="2dp"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#a8e4e6"/>
+        android:layout_marginTop="2dp"
+        android:background="#a8e4e6" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="180dp">
 
         <ImageView
-            android:scaleType="fitXY"
             android:layout_width="100dp"
             android:layout_height="100dp"
+            android:layout_centerInParent="true"
             android:background="@drawable/iv_userinfo_addimg"
-            android:layout_centerInParent="true"/>
+            android:scaleType="fitXY"
+            android:id="@+id/iv_img_userinfo"/>
 
     </RelativeLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/colorItemBackground">
+
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:gravity="center|left"
+            android:padding="16dp"
+            android:text="用户id"
+            android:textColor="@color/titleColorUserInfo"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tv_showid_userinfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:ellipsize="end"
+            android:gravity="center|left"
+            android:maxLines="1"
+            android:padding="8dp"
+            android:text="dlx"
+            android:textColor="@color/textColorUserInfo"
+            android:textSize="18sp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/colorItemBackground">
+
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:gravity="center|left"
+            android:padding="16dp"
+            android:text="用户昵称"
+            android:textColor="@color/titleColorUserInfo"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/ev_showname_userinfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:ellipsize="end"
+            android:gravity="center|left"
+            android:maxLines="1"
+            android:padding="8dp"
+            android:text="丁龙翔"
+            android:textColor="@color/textColorUserInfo"
+            android:textSize="18sp" />
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_modify_userinfo"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center"
+        android:text="确认修改"
+        android:layout_marginTop="16dp"
+        android:textSize="16sp"
+        android:background="@drawable/tv_modify_bg"
+        android:textColor="@color/colorTitleBar"
+        />
+
+    <TextView
+        android:id="@+id/tv_modifypassword"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center"
+        android:text="修改密码"
+        android:textSize="16sp"
+        android:textColor="@color/titleColorUserInfo"
+        />
 
 
 </LinearLayout>

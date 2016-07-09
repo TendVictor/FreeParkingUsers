@@ -17,11 +17,12 @@ package com.xys.libzxing.zxing.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -36,7 +37,10 @@ import com.xys.libzxing.zxing.decode.DecodeThread;
 import com.xys.libzxing.zxing.utils.BeepManager;
 import com.xys.libzxing.zxing.utils.CaptureActivityHandler;
 import com.xys.libzxing.zxing.utils.InactivityTimer;
+import com.xys.libzxing.zxing.utils.NetPostConnection;
 import com.xys.libzxing.zxing.view.ScanView;
+
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -64,6 +68,10 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
     private Rect mCropRect = null;
     private boolean isHasSurface = false;
+
+    private static final String SCAN_QRCode_URL = "http://139.129.24.127/parking_app/User/user_scanQRcode.php";
+
+    private ProgressDialog pd = null;
 
     public Handler getHandler() {
         return handler;
@@ -172,15 +180,54 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         inactivityTimer.onActivity();
         beepManager.playBeepSoundAndVibrate();
 
-        Intent resultIntent = new Intent();
-        bundle.putInt("width", mCropRect.width());
-        bundle.putInt("height", mCropRect.height());
-        bundle.putString("result", rawResult.getText());
-        Log.e(TAG,rawResult.getText());
-        resultIntent.putExtras(bundle);
-        this.setResult(RESULT_OK, resultIntent);
-        CaptureActivity.this.finish();
+         String ticket_id = rawResult.getText();
+
+         AddTicket(ticket_id);
+
+//        Intent resultIntent = new Intent();
+//        bundle.putInt("width", mCropRect.width());
+//        bundle.putInt("height", mCropRect.height());
+//        bundle.putString("result", rawResult.getText());
+//        Log.e(TAG,rawResult.getText());
+//        resultIntent.putExtras(bundle);
+//        this.setResult(RESULT_OK, resultIntent);
+//        CaptureActivity.this.finish();
     }
+
+    public void AddTicket(String ticket_id) {
+        new NetPostConnection(SCAN_QRCode_URL, new NetPostConnection.SuccessCallback() {
+            @Override
+            public void onSuccess(String result) throws JSONException {
+                Message msg = new Message();
+                msg.obj = result;
+                msg.what = NET_SUCCESS;
+                nethandler.sendMessage(msg);
+            }
+        }, new NetPostConnection.FailCallback() {
+            @Override
+            public void onFail() {
+                nethandler.sendEmptyMessage(NET_FAILURE);
+            }
+        }, new Object[]{
+                "user_id","user","ticket_id",ticket_id
+        });
+    }
+
+    private static  final int NET_SUCCESS = 0x123;
+    private static  final int NET_FAILURE = 0x110;
+    private Handler nethandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+             switch (msg.what){
+                 case NET_SUCCESS:
+                     String result = (String) msg.obj;
+                     Log.e("TAG",result);
+                     break;
+                 case NET_FAILURE:
+                     break;
+             }
+        }
+    };
 
     private void initCamera(SurfaceHolder surfaceHolder) {
         if (surfaceHolder == null) {

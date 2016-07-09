@@ -1,17 +1,20 @@
 package com.example.chen.freeparkingusers.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.chen.freeparkingusers.R;
+import com.example.chen.freeparkingusers.activity.SellerDetailActivity;
 import com.example.chen.freeparkingusers.adapter.SellerAdapter;
 import com.example.chen.freeparkingusers.item.SellerInfo;
 import com.example.chen.freeparkingusers.net.Config;
@@ -29,6 +32,13 @@ import java.util.List;
  */
 public class SellerFragment extends BaseFragment{
 
+    private SellerAdapter.FootViewHolder footHolder;
+    private boolean isLoading = false;
+    private boolean loadingAble = true;
+
+    private int last = 0;
+    private int totalItemCount = 0;
+
     private final String search_word = "";
     private int number_limit = 0;
 
@@ -38,19 +48,36 @@ public class SellerFragment extends BaseFragment{
     private List<SellerInfo> mDatas;
     private SellerAdapter mSellerAdapter;
 
+    private LinearLayoutManager mLayoutManager;
+
     private Handler handler = new Handler(){
 
         @Override
         public void handleMessage(Message msg){
             switch (msg.what){
-                case 0x0:
+                case 0x0://加载更多跟刷新数据
                     number_limit+=10;
-                    mSellerAdapter.notifyDataSetChanged();
+                    totalItemCount = mDatas.size();
                     break;
                 case 0x1:
                     Toast.makeText(getActivity(),"更新失败，请检查网络",Toast.LENGTH_SHORT).show();
                     break;
+                case 0x2:
+                    getDatas();
+                    totalItemCount = mSellerAdapter.getItemCount();
+                    isLoading = false;
+                    Toast.makeText(getActivity(),"更新失败,没有数据",Toast.LENGTH_SHORT).show();
+                    break;
+                case 0x3://没有更多数据了
+                    nomoreData();
+                    isLoading = false;
+                    break;
             }
+            if(footHolder == null)
+                footHolder = (SellerAdapter.FootViewHolder)
+                        mRecyclerView.findViewHolderForAdapterPosition(totalItemCount - 1);
+
+            mSellerAdapter.notifyDataSetChanged();
             mSwipeLayout.setRefreshing(false);
         }
     };
@@ -58,25 +85,99 @@ public class SellerFragment extends BaseFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container , Bundle SavedInstanceState){
         View view = inflater.inflate(R.layout.fragment_campaign,null,false);
+        mLayoutManager = new LinearLayoutManager(getActivity());
         mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_seller);
         mSwipeLayout.setColorSchemeResources(R.color.colorAppTheme);
         mSwipeLayout.setOnRefreshListener(new onRefreshListener());
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_seller);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newstate) {
+                super.onScrollStateChanged(recyclerView, newstate);
+                Log.d("loadmoreBefore", isLoading + "");
+                if (last >= totalItemCount - 1 && !isLoading && loadingAble) {
+                    isLoading = true;
+                    loadmore();
+                }
+            }
 
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                last = mLayoutManager.findLastCompletelyVisibleItemPosition();
+                Log.d("second1", mLayoutManager.findLastVisibleItemPosition()+"  "+mLayoutManager.getChildCount());
+                if(mRecyclerView.getChildAt(mLayoutManager.getChildCount()) != null){
+                    Log.d("second","1");
+                    if(mSellerAdapter.getItemViewType(mLayoutManager.findLastVisibleItemPosition()) == 2){
+                       Log.d("height", mRecyclerView.getChildAt(mLayoutManager.findLastVisibleItemPosition()).getHeight()+"");
+                    }
+                }
+            }
+        });
+
+
+
         mDatas = new ArrayList<>();
         number_limit = 0;
-        getDatas();
+        getSellerInfo(search_word,number_limit);
 
         mSellerAdapter = new SellerAdapter(getActivity(), (ArrayList<SellerInfo>) mDatas);
+        mSellerAdapter.setOnItemClickListener(new SellerAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                SellerInfo seller_info = mDatas.get(position);
+                Intent intent = new Intent(getActivity(), SellerDetailActivity.class);
+                intent.putExtra("seller_info", seller_info);
+                startActivity(intent);
+            }
+        });
+
         mRecyclerView.setAdapter(mSellerAdapter);
+
         return view;
     }
 
+    //滑动底层加载更多
+    public void loadmore(){
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("loadmore", "loadmore");
+                getSellerInfo(search_word, number_limit);
+            }
+        }, 3000);
+    }
+
+    public void nomoreData(){
+        if(footHolder != null)
+            footHolder.setIsHaveData(true);
+        if(mRecyclerView.findViewHolderForAdapterPosition(totalItemCount - 1) != null){
+            footHolder =
+                    (SellerAdapter.FootViewHolder) mRecyclerView.findViewHolderForAdapterPosition(totalItemCount-1);
+            footHolder.setIsHaveData(true);
+        }
+        loadingAble = false;
+    }
+
+    //恢复刷新之前的状态
+    public void resetRecycleStateAndRefresh(){
+        Log.d("resetBefore", totalItemCount + "");
+        if(footHolder != null){
+            footHolder.setIsHaveData(false);
+        }
+        mDatas.clear();
+        number_limit = 0;
+        isLoading = false;
+        loadingAble = true;
+        getSellerInfo(search_word,number_limit);
+    }
+
+    //测试数据
     private void getDatas(){
 
-        for(int i = 0; i < 30 ; i++){
+        for(int i = 0; i < 10 ; i++){
             SellerInfo s = new SellerInfo(
                     i+"",
                     "name"+i,
@@ -91,8 +192,7 @@ public class SellerFragment extends BaseFragment{
 
         @Override
         public void onRefresh() {
-            getSellerInfo(search_word,number_limit);
-
+            resetRecycleStateAndRefresh();
         }
     }
 
@@ -103,8 +203,11 @@ public class SellerFragment extends BaseFragment{
                 new NetPostConnection.SuccessCallback() {
                     @Override
                     public void onSuccess(String result) throws JSONException {
+                        if(result.equalsIgnoreCase("0")){
+                            handler.obtainMessage(0x3).sendToTarget();
+                            return;
+                        }
                         JSONArray jsonArray = new JSONArray(result);
-                        mDatas.clear();
                         for (int i = 0; i < jsonArray.length(); i++){
                             JSONObject object = (JSONObject) jsonArray.getJSONObject(i);
                             SellerInfo info = new SellerInfo(

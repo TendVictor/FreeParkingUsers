@@ -32,7 +32,8 @@
             android:hint="搜索"
             android:paddingLeft="24dp"
             android:textSize="14sp"
-            android:textColor="@color/colorTextDark"/>
+            android:textColor="@color/colorTextDark"
+            android:singleLine="true"/>
 
         <View
             android:layout_width="12dp"
