@@ -47,10 +47,8 @@ public class ticketFragment extends BaseFragment {
 
     private LinearLayout llContainer = null;
 
-    //4 test
+    //for test
     private Button btnRefresh = null;
-    private String username = Config.username;
-
 
     private MyScrollListener mScrollListener;
 
@@ -91,8 +89,7 @@ public class ticketFragment extends BaseFragment {
     private void initViewAndEvents(View view) {
         btnRefresh = $(view, R.id.btn_refresh);
 
-        if(Config.username == null)
-            btnRefresh.setText("请先登录");
+        if(Config.username == null) btnRefresh.setText("请先登录");
         btnRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,7 +150,7 @@ public class ticketFragment extends BaseFragment {
                     handler.sendEmptyMessage(NET_FAILURE);
                 }
             }, new Object[]{
-                    "user_id", username
+                    "user_id", Config.username
             });
         }
 
@@ -183,7 +180,6 @@ public class ticketFragment extends BaseFragment {
                         }
                     }
 
-
                     break;
                 case NET_FAILURE:
                     break;
@@ -210,9 +206,9 @@ public class ticketFragment extends BaseFragment {
             llContainer.setVisibility(View.VISIBLE);
 
             if(Config.username == null){
-               btnRefresh.setText("请先登录~");
+                btnRefresh.setText("Login");
             }else{
-               btnRefresh.setText("点击刷新一下");
+                btnRefresh.setText("Refresh");
             }
 
         }

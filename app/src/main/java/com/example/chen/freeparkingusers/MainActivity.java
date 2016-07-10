@@ -1,5 +1,7 @@
 package com.example.chen.freeparkingusers;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -104,12 +106,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     @Override
     public void onResume(){
         super.onResume();
-        if(Config.username != null){
-            //username仍存在
-        }else{
-            mTicketFragment.RefreshTicketInfo();
-            //刷新操作
-        }
+        //刷新操作
+        mTicketFragment.RefreshTicketInfo();
         Log.d("onResume",Config.username+"");
     }
 
@@ -135,8 +133,29 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     }
 
     public void scanQRCode(){
-        Intent i = new Intent(MainActivity.this, CaptureActivity.class);
-        startActivity(i);
+
+        //已登录则可以扫描
+        if(Config.username != null){
+            Intent i = new Intent(MainActivity.this, CaptureActivity.class);
+            i.putExtra("user_id",Config.username);
+            startActivity(i);
+        }
+        //没有登录则提示登录
+        else{
+            new AlertDialog.Builder(this).setMessage("您还没有登录，请先登录").setPositiveButton("这就登录", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent i = new Intent(MainActivity.this,LoginActivity.class);
+                    startActivity(i);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                }
+            }).setNegativeButton("暂时不", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            }).show();
+        }
     }
 
     public void intoSearch(){

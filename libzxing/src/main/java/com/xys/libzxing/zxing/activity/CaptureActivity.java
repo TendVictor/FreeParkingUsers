@@ -73,6 +73,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
     private ProgressDialog pd = null;
 
+    private String username = null;
     public Handler getHandler() {
         return handler;
     }
@@ -84,6 +85,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+
+        username = getIntent().getStringExtra("user_id");
+
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_capture);
@@ -93,6 +97,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         scanCropView = (ScanView) findViewById(R.id.capture_crop_view);
         inactivityTimer = new InactivityTimer(this);
         beepManager = new BeepManager(this);
+
     }
 
     @Override
@@ -209,7 +214,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 nethandler.sendEmptyMessage(NET_FAILURE);
             }
         }, new Object[]{
-                "user_id","user","ticket_id",ticket_id
+                "user_id",username,"ticket_id",ticket_id
         });
     }
 
