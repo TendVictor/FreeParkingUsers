@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.chen.freeparkingusers.R;
@@ -47,8 +48,9 @@ public class ticketFragment extends BaseFragment {
 
     private LinearLayout llContainer = null;
 
-    //for test
+    //要求登录与没有数据相关页面
     private Button btnRefresh = null;
+    private TextView tvNodata = null;
 
     private MyScrollListener mScrollListener;
 
@@ -87,9 +89,15 @@ public class ticketFragment extends BaseFragment {
     }
 
     private void initViewAndEvents(View view) {
-        btnRefresh = $(view, R.id.btn_refresh);
 
-        if(Config.username == null) btnRefresh.setText("请先登录");
+        btnRefresh = $(view, R.id.btn_refresh);
+        tvNodata = $(view,R.id.tv_NoData);
+
+        if(Config.username == null){
+            btnRefresh.setText("点我登录");
+            tvNodata.setText("登录后才可以查看停车券哦");
+        }
+
         btnRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -182,6 +190,10 @@ public class ticketFragment extends BaseFragment {
 
                     break;
                 case NET_FAILURE:
+
+                    swipeRefreshLayout.setRefreshing(false);
+                    Toast.makeText(getActivity(),"网络错误,请检查",Toast.LENGTH_SHORT).show();
+
                     break;
                 case LOADMORE:
 
@@ -206,9 +218,16 @@ public class ticketFragment extends BaseFragment {
             llContainer.setVisibility(View.VISIBLE);
 
             if(Config.username == null){
-                btnRefresh.setText("Login");
+
+                btnRefresh.setVisibility(View.VISIBLE);
+                btnRefresh.setText("点我登录");
+                tvNodata.setText("登录后才可以查看停车券哦");
+
             }else{
-                btnRefresh.setText("Refresh");
+
+                btnRefresh.setVisibility(View.GONE);
+                tvNodata.setText("暂时没有停车券,快去参加活动吧");
+
             }
 
         }

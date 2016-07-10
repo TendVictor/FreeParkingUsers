@@ -24,23 +24,27 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:background="#2CBEC5"
+        android:padding="5dp">
         <TextView
             android:id="@+id/tv_NoData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="啊哦~"
-            android:textColor="#000"
-            android:textSize="44sp"
+            android:textColor="#fff"
+            android:textSize="18sp"
             />
         <Button
             android:id="@+id/btn_refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Refresh"
-            android:textSize="44sp"
-            android:onClick="r"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:textSize="15sp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="100dp"
+            android:layout_marginRight="50dp"
+            android:textColor="#fff"
+            android:background="@drawable/login_btn"
             />
     </LinearLayout>
 </LinearLayout>
