@@ -1,12 +1,12 @@
 package com.example.chen.freeparkingusers.activity;
 
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -23,7 +23,7 @@ import com.example.chen.freeparkingusers.net.NetPostConnection;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends Activity {
 
     private EditText edtUsername = null;
     private EditText edtPasswd = null;

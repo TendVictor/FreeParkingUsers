@@ -34,7 +34,6 @@ import com.qiniu.android.storage.UpProgressHandler;
 import com.qiniu.android.storage.UploadManager;
 import com.qiniu.android.storage.UploadOptions;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -337,12 +336,9 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         new NetPostConnection(Config.URL_GET_USERINFO, new NetPostConnection.SuccessCallback() {
             @Override
             public void onSuccess(String result) throws JSONException {
-                JSONArray jsonArray = new JSONArray(result);
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject object = jsonArray.getJSONObject(i);
-                    userName = object.getString("user_name");
-                    userImg = object.getString("user_img");
-                }
+                JSONObject object = new JSONObject(result);
+                userName = object.getString("user_name");
+                userImg = object.getString("user_img");
                 handler.obtainMessage(0x4).sendToTarget();
             }
         }, new NetPostConnection.FailCallback() {

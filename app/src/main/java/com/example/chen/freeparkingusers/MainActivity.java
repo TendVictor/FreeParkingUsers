@@ -107,6 +107,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         if(Config.username != null){
             //username仍存在
         }else{
+            mTicketFragment.RefreshTicketInfo();
             //刷新操作
         }
         Log.d("onResume",Config.username+"");

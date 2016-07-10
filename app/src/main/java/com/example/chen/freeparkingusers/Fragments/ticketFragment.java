@@ -133,11 +133,11 @@ public class ticketFragment extends BaseFragment {
 
     private void FetchTicketData() {
         if(Config.username == null){
-            swipeRefreshLayout.setRefreshing(false);
-            ChangeViewState(View.VISIBLE);
+            if (swipeRefreshLayout != null){
+                swipeRefreshLayout.setRefreshing(false);
+                ChangeViewState(View.VISIBLE);
+            }
             //对界面做处理 改成要去登陆的界面
-
-
         }else{
             new NetPostConnection(Config.URL_GET_ALLTICKETS, new NetPostConnection.SuccessCallback() {
                 @Override
