@@ -133,6 +133,8 @@ public class ticketFragment extends BaseFragment {
     public static final int LOADMORE = 0x120;
 
     public void RefreshTicketInfo(){
+
+         Log.e("TAGOfUser_id",Config.username+"");
          FetchTicketData();
     }
 
@@ -170,7 +172,9 @@ public class ticketFragment extends BaseFragment {
             switch (msg.what) {
                 case NET_SUCCESS:
 
+                    if(swipeRefreshLayout != null)
                     swipeRefreshLayout.setRefreshing(false);
+
                     String result = (String) msg.obj;
 
                     if (parseJsonInfo(result)) {
