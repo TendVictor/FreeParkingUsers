@@ -69,6 +69,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     private String userName;
     private String userImg;
 
+
     private ImageView ivBack, ivLogout;
     private ProgressImageView ivUserImg;
 
@@ -94,7 +95,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
                     Toast.makeText(UserInfoDetailActivity.this, "网络原因获取失败", Toast.LENGTH_SHORT).show();
                     break;
                 case 0x4://获取个人信息成功
-                    Log.d("0x4",userImg);
+                    Log.d("0x4", userImg);
                     updateUserInfo();
                     downloadImg();
                     break;
@@ -115,9 +116,10 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_userinfo);
-        if(Config.username != null){
+        Config.username = "13823151843";
+        if (Config.username != null) {
             applyForUserInfo(Config.username);
-            System.out.println(Config.username+"     lallaallalal");
+            System.out.println(Config.username + "     lallaallalal");
         }
         initView();
     }
@@ -125,9 +127,9 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(bitmap != null)
-        if (!bitmap.isRecycled())
-            bitmap.recycle();
+        if (bitmap != null)
+            if (!bitmap.isRecycled())
+                bitmap.recycle();
     }
 
 
@@ -169,8 +171,15 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
                 modifyUserInfo();
                 break;
             case R.id.tv_modifypassword:
+                moveToModifyActivity();
                 break;
         }
+    }
+
+    //移动至修改密码界面
+    private void moveToModifyActivity() {
+        Intent intent = new Intent(UserInfoDetailActivity.this, ModifyPasswordActivity.class);
+        startActivity(intent);
     }
 
     //选择拍照还是本地图片
@@ -196,28 +205,12 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     private void takePhoto() {
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        String sdState = Environment.getExternalStorageState();
-//        if (sdState.equalsIgnoreCase(Environment.MEDIA_MOUNTED)) {
-//            File toFile = new File(Environment.getExternalStorageDirectory(), IMAGE_FILE_NAME);
-//            try {
-//                if (!toFile.exists())
-//                    toFile.createNewFile();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
         cameraUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory()
                 , IMAGE_FILE_NAME));
-//            Log.d("cameraUri", cameraUri + "");
         intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
-//        }
         Log.d("before", cameraUri + "");
         startActivityForResult(intent, SELECT_PIC_BY_TAKE_PHOTO);
         Log.d("after", cameraUri + "");
-//        File file = new File(Environment.getExternalStorageDirectory() + IMAGE_FILE_NAME);
-//        cameraUri = Uri.fromFile(file);
-//        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
-//        startActivityForResult(intent, SELECT_PIC_BY_TAKE_PHOTO);
     }
 
     //选择本地图片
@@ -230,7 +223,6 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("data", data.toString());
         if (data != null) {
             switch (requestCode) {
                 case SELECT_PIC_BY_PICK_PHOTO:
@@ -240,37 +232,15 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
                     }
                     break;
                 case SELECT_PIC_BY_TAKE_PHOTO:
-//                    Bundle bundle = data.getExtras();
-//                    bitmap = data.getParcelableExtra("data");
-                    Log.d("bitmap", bitmap.toString());
-
-//                    pictureFromTakingPhoto();
+                    Log.d("intent", data.toString());
                     break;
                 case CROP_BY_CAMERA://裁剪
 //                    finishCrop(data);
                     break;
             }
         } else {
-//            if(requestCode == SELECT_PIC_BY_TAKE_PHOTO && cameraUri != null){
-//                startCropImage(cameraUri);
-//            }else if(requestCode == CROP_BY_CAMERA && cameraUri != null){
+
             Log.d("here", "here");
-//                try {
-//                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), cameraUri);
-//                    RoundedBitmapDrawable roundedBitmapDrawable =
-//                            RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-//                    roundedBitmapDrawable.setCornerRadius(bitmap.getWidth()/2);
-//                    ivUserImg.setImageDrawable(roundedBitmapDrawable);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-
-
-//                RoundedBitmapDrawable roundedBitmapDrawable =
-//                        RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-//                roundedBitmapDrawable.setCornerRadius(bitmap.getWidth()/2);
-//                ivUserImg.setImageDrawable(roundedBitmapDrawable);
-//            }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -300,14 +270,14 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
             };
 
 
-            uploadManager.put(result,"user5",tokens,upHandler,new UploadOptions(null, null, false,
+            uploadManager.put(result, "user5", tokens, upHandler, new UploadOptions(null, null, false,
                     new UpProgressHandler() {
                         @Override
                         public void progress(String key, double percent) {
                             ivUserImg.setProgress((int) (percent * 100));
-                            Log.d("qiniu", key+ " : " + percent);
+                            Log.d("qiniu", key + " : " + percent);
                         }
-                    },null));
+                    }, null));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -345,15 +315,15 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     //修改个人信息
     private void modifyUserInfo() {
         userName = evUserName.getText().toString();
-        if(!checkInfoIsNull(userName,Config.username,userImg)){
+        if (!checkInfoIsNull(userName, Config.username, userImg)) {
             new NetPostConnection(Config.URL_MODIFY_USER, new NetPostConnection.SuccessCallback() {
                 @Override
                 public void onSuccess(String result) throws JSONException {
                     JSONObject object = new JSONObject(result);
                     int res = object.getInt("state");
-                    if(res == 0){
+                    if (res == 0) {
                         handler.obtainMessage(0x5).sendToTarget();
-                    }else{
+                    } else {
                         handler.obtainMessage(0x6).sendToTarget();
                     }
                 }
@@ -362,7 +332,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
                 public void onFail() {
                     handler.obtainMessage(0x3).sendToTarget();
                 }
-            },"user_id",Config.username,"user_name",userName,"user_img",userImg);
+            }, "user_id", Config.username, "user_name", userName, "user_img", userImg);
         }
     }
 
@@ -387,17 +357,17 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     //登录成功后，更新信息
     private void updateUserInfo() {
         evUserName.setText(userName);
-        if(Config.username != null)
+        if (Config.username != null)
             tvUserid.setText(Config.username);
     }
 
     //七牛云下载图片
     private void downloadImg() {
-        if(userImg != null){
-            userImg.replace("\\","");
+        if (userImg != null) {
+            userImg.replace("\\", "");
             Log.d("downloadImg", userImg);
             ImageLoader.getInstance(this).bindBitmap(userImg, R.drawable.default_img,
-                    ivUserImg.getImageView(),ImageLoader.getInstance(this).roundedBindStrategy);
+                    ivUserImg.getImageView(), ImageLoader.getInstance(this).roundedBindStrategy);
 
         }
     }
@@ -517,7 +487,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         roundedBitmapDrawable.setCornerRadius(bitmap.getWidth() / 2);
         ivUserImg.getImageView().setImageDrawable(roundedBitmapDrawable);
 
-        if(isImgChange)
+        if (isImgChange)
             applyforToken();
 
     }
@@ -555,13 +525,13 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         startActivityForResult(intent, CROP_BY_CAMERA);
     }
 
-    private boolean checkInfoIsNull(Object ... keys){
+    private boolean checkInfoIsNull(Object... keys) {
         boolean someisNull = false;
-        for (int i = 0; i < keys.length; i++){
-            if(keys[i] == null)
+        for (int i = 0; i < keys.length; i++) {
+            if (keys[i] == null)
                 someisNull = true;
         }
-        Log.d("someisNull" , someisNull+"");
+        Log.d("someisNull", someisNull + "");
         return someisNull;
     }
 }

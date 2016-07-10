@@ -19,6 +19,9 @@ public class Config {
     public static final String URL_GET_TOKENS = "http://139.129.24.127/parking_app/Qiniu/GetToken.php";
     public static final String URL_GET_USERINFO = "http://139.129.24.127/parking_app/User/user_getinformation.php";
     public static final String URL_MODIFY_USER = "http://139.129.24.127/parking_app/User/user_modifyPersonal.php";
+    public static final String URL_MODIFY_PASSWORD = "http://139.129.24.127/parking_app/User/user_modifyPassword.php";
+    public  static final String URL_REGISTER_USER = "http://139.129.24.127/parking_app/User/user_register.php";
+    public static final String IMG_PREFIX = "http://7xvu2c.com1.z0.glb.clouddn.com/";
 
 
     public static byte[] toByteArray(InputStream input) throws IOException {
