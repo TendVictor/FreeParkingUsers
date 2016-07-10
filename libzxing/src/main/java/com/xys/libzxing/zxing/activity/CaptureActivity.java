@@ -29,6 +29,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.google.zxing.Result;
 import com.xys.libzxing.R;
@@ -41,6 +42,7 @@ import com.xys.libzxing.zxing.utils.NetPostConnection;
 import com.xys.libzxing.zxing.view.ScanView;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -71,9 +73,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
     private static final String SCAN_QRCode_URL = "http://139.129.24.127/parking_app/User/user_scanQRcode.php";
 
+    private String username = null;
     private ProgressDialog pd = null;
 
-    private String username = null;
     public Handler getHandler() {
         return handler;
     }
@@ -187,19 +189,16 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
          String ticket_id = rawResult.getText();
 
+         // just for test
+         Toast.makeText(CaptureActivity.this,ticket_id,Toast.LENGTH_SHORT).show();
          AddTicket(ticket_id);
 
-//        Intent resultIntent = new Intent();
-//        bundle.putInt("width", mCropRect.width());
-//        bundle.putInt("height", mCropRect.height());
-//        bundle.putString("result", rawResult.getText());
-//        Log.e(TAG,rawResult.getText());
-//        resultIntent.putExtras(bundle);
-//        this.setResult(RESULT_OK, resultIntent);
-//        CaptureActivity.this.finish();
     }
 
     public void AddTicket(String ticket_id) {
+
+        pd  = ProgressDialog.show(this,"","正在添加,请稍候");
+
         new NetPostConnection(SCAN_QRCode_URL, new NetPostConnection.SuccessCallback() {
             @Override
             public void onSuccess(String result) throws JSONException {
@@ -225,14 +224,43 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         public void handleMessage(Message msg) {
              switch (msg.what){
                  case NET_SUCCESS:
+                     pd.cancel();
                      String result = (String) msg.obj;
                      Log.e("TAG",result);
+                     if(parseJsonResult(result)){
+                         new AlertDialog.Builder(CaptureActivity.this).setMessage("添加成功").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                             @Override
+                             public void onClick(DialogInterface dialog, int which) {
+                                 finish();
+                             }
+                         }).setCancelable(false).show();
+                     }else{
+                         Toast.makeText(CaptureActivity.this,"不合法的ticket_id",Toast.LENGTH_SHORT).show();
+                     }
                      break;
                  case NET_FAILURE:
+                     pd.cancel();
+                     Toast.makeText(CaptureActivity.this,"网络异常,请重试",Toast.LENGTH_SHORT).show();
                      break;
              }
         }
     };
+
+    private boolean parseJsonResult(String result) {
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            int flag = jsonObject.getInt("state");
+            if(flag == 0){
+                return true;
+            }else if(flag == 1){
+                return false;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 
     private void initCamera(SurfaceHolder surfaceHolder) {
         if (surfaceHolder == null) {
