@@ -121,6 +121,8 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
+
+
     private void parseJsonResult(String s) {
         try {
             JSONObject result = new JSONObject(s);
@@ -129,7 +131,6 @@ public class LoginActivity extends AppCompatActivity {
             if(flag == 0){
                 //保存username
                 Config.username =  username;
-
                 Intent i = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(i);
                 finish();

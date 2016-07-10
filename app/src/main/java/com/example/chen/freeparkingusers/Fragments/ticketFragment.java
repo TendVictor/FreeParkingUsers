@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.chen.freeparkingusers.R;
+import com.example.chen.freeparkingusers.activity.LoginActivity;
 import com.example.chen.freeparkingusers.activity.QRCodeActivity;
 import com.example.chen.freeparkingusers.adapter.TicketAdapter;
 import com.example.chen.freeparkingusers.net.Config;
@@ -33,6 +34,7 @@ import java.util.HashMap;
 /**
  * Created by ran on 16/7/4.
  */
+
 public class ticketFragment extends BaseFragment {
 
     public static final String TAG = "TicFrg";
@@ -46,8 +48,8 @@ public class ticketFragment extends BaseFragment {
     private LinearLayout llContainer = null;
 
     //4 test
-    private Button btnTest = null;
-    private String username = "sb";
+    private Button btnRefresh = null;
+    private String username = Config.username;
 
 
     private MyScrollListener mScrollListener;
@@ -58,12 +60,12 @@ public class ticketFragment extends BaseFragment {
         initData();
         initVariables();
         initViewAndEvents(view);
+        FetchTicketData();
         return view;
     }
 
     private void initData() {
         dataSet = new ArrayList<HashMap<String, String>>();
-        FetchTicketData();
     }
 
     private void initVariables() {
@@ -74,8 +76,8 @@ public class ticketFragment extends BaseFragment {
                 //传递数据
                 Intent i = new Intent(getActivity(), QRCodeActivity.class);
                 i.putExtra("ticket_id", dataSet.get(position).get("ticket_id"));
-                i.putExtra("seller_name",dataSet.get(position).get("seller_name"));
-                i.putExtra("ticket_deadline",dataSet.get(position).get("ticket_deadline"));
+                i.putExtra("seller_name", dataSet.get(position).get("seller_name"));
+                i.putExtra("ticket_deadline", dataSet.get(position).get("ticket_deadline"));
                 startActivity(i);
             }
 
@@ -87,13 +89,19 @@ public class ticketFragment extends BaseFragment {
     }
 
     private void initViewAndEvents(View view) {
-        //test
-        btnTest = $(view, R.id.btn_refresh);
-        btnTest.setOnClickListener(new View.OnClickListener() {
+        btnRefresh = $(view, R.id.btn_refresh);
+
+        if(Config.username == null)
+            btnRefresh.setText("请先登录");
+        btnRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                username = "user";
-                FetchTicketData();
+                if(Config.username == null){
+                    Intent i = new Intent(getActivity(), LoginActivity.class);
+                    startActivity(i);
+                }else{
+                    FetchTicketData();
+                }
             }
         });
 
@@ -109,7 +117,7 @@ public class ticketFragment extends BaseFragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                   FetchTicketData();
+                FetchTicketData();
             }
         });
 
@@ -118,23 +126,37 @@ public class ticketFragment extends BaseFragment {
     }
 
     public static final int LOADMORE = 0x120;
-    public void FetchTicketData() {
-        new NetPostConnection(Config.URL_GET_ALLTICKETS, new NetPostConnection.SuccessCallback() {
-            @Override
-            public void onSuccess(String result) throws JSONException {
-                Message msg = new Message();
-                msg.obj = result;
-                msg.what = NET_SUCCESS;
-                handler.sendMessage(msg);
-            }
-        }, new NetPostConnection.FailCallback() {
-            @Override
-            public void onFail() {
-                handler.sendEmptyMessage(NET_FAILURE);
-            }
-        }, new Object[]{
-                "user_id", username
-        });
+
+    public void RefreshTicketInfo(){
+         FetchTicketData();
+    }
+
+    private void FetchTicketData() {
+        if(Config.username == null){
+            swipeRefreshLayout.setRefreshing(false);
+            ChangeViewState(View.VISIBLE);
+            //对界面做处理 改成要去登陆的界面
+
+
+        }else{
+            new NetPostConnection(Config.URL_GET_ALLTICKETS, new NetPostConnection.SuccessCallback() {
+                @Override
+                public void onSuccess(String result) throws JSONException {
+                    Message msg = new Message();
+                    msg.obj = result;
+                    msg.what = NET_SUCCESS;
+                    handler.sendMessage(msg);
+                }
+            }, new NetPostConnection.FailCallback() {
+                @Override
+                public void onFail() {
+                    handler.sendEmptyMessage(NET_FAILURE);
+                }
+            }, new Object[]{
+                    "user_id", username
+            });
+        }
+
     }
 
     private Handler handler = new Handler() {
@@ -142,19 +164,25 @@ public class ticketFragment extends BaseFragment {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case NET_SUCCESS:
+
                     swipeRefreshLayout.setRefreshing(false);
                     String result = (String) msg.obj;
-                    parseJsonInfo(result);
 
-                    ticketAdapter.notifyDataSetChanged();
+                    if (parseJsonInfo(result)) {
 
-                    mScrollListener.setHasMore(true);
+                        ticketAdapter.notifyDataSetChanged();
 
-                    LinearLayoutManager llLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                    if (llLayoutManager.findFirstVisibleItemPosition() == 0
-                     && llLayoutManager.findLastCompletelyVisibleItemPosition() == ticketAdapter.getItemCount()-1){
-                        mScrollListener.setHasMore(false);
+                        mScrollListener.setHasMore(true);
+
+                        LinearLayoutManager llLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                        if (llLayoutManager.findFirstVisibleItemPosition() <= 0
+                                && llLayoutManager.findLastCompletelyVisibleItemPosition() >= ticketAdapter.getItemCount() - 1) {
+                            mScrollListener.setHasMore(false);
+                            mScrollListener.resetFootView();
+                            Log.e("TAG", "Here");
+                        }
                     }
+
 
                     break;
                 case NET_FAILURE:
@@ -163,7 +191,7 @@ public class ticketFragment extends BaseFragment {
 
                     mScrollListener.setHasMore(false);
 
-                    if(mScrollListener.isLoadingMore()){
+                    if (mScrollListener.isLoadingMore()) {
                         mScrollListener.resetFootView();
                         mScrollListener.setLoadingMore(false);
                     }
@@ -173,27 +201,35 @@ public class ticketFragment extends BaseFragment {
         }
     };
 
-    private void SetViewVisible(int state) {
+    private void ChangeViewState(int state) {
         if (state == View.GONE) {
             llContainer.setVisibility(View.GONE);
             swipeRefreshLayout.setVisibility(View.VISIBLE);
-        } else {
+        }else{
             swipeRefreshLayout.setVisibility(View.GONE);
             llContainer.setVisibility(View.VISIBLE);
+
+            if(Config.username == null){
+               btnRefresh.setText("请先登录~");
+            }else{
+               btnRefresh.setText("点击刷新一下");
+            }
+
         }
     }
 
-    private void parseJsonInfo(String result) {
+    private boolean parseJsonInfo(String result) {
         if (result.contains("\"state\":")) {
             if (result.contains("0")) {
                 //这里是没有数据的展示
-                SetViewVisible(View.VISIBLE);
+                ChangeViewState(View.VISIBLE);
             } else if (result.contains("2")) {
                 Toast.makeText(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show();
             }
+            return false;
         } else {
             try {
-                SetViewVisible(View.GONE);
+                ChangeViewState(View.GONE);
                 dataSet.clear();
                 JSONArray array = new JSONArray(result);
                 for (int i = 0; i < array.length(); i++) {
@@ -208,10 +244,12 @@ public class ticketFragment extends BaseFragment {
 
                     dataSet.add(tmp);
                 }
+                return true;
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+        return false;
     }
 
     private static final int NET_SUCCESS = 0x123;
@@ -243,12 +281,12 @@ public class ticketFragment extends BaseFragment {
 
         public void resetFootView() {
             if (hasMore) {
-                TicketAdapter.FootViewHolder fvh = (TicketAdapter.FootViewHolder) recyclerView.findViewHolderForLayoutPosition(ticketAdapter.getItemCount()-1);
+                TicketAdapter.FootViewHolder fvh = (TicketAdapter.FootViewHolder) recyclerView.findViewHolderForLayoutPosition(ticketAdapter.getItemCount() - 1);
                 //界面展示
                 fvh.tv.setText("上拉加载");
                 fvh.pb.setVisibility(View.GONE);
             } else {
-                TicketAdapter.FootViewHolder fvh = (TicketAdapter.FootViewHolder) recyclerView.findViewHolderForLayoutPosition(ticketAdapter.getItemCount()-1);
+                TicketAdapter.FootViewHolder fvh = (TicketAdapter.FootViewHolder) recyclerView.findViewHolderForLayoutPosition(ticketAdapter.getItemCount() - 1);
                 //界面展示
                 fvh.tv.setText("没有更多数据了");
                 fvh.pb.setVisibility(View.GONE);
@@ -266,7 +304,6 @@ public class ticketFragment extends BaseFragment {
                 if (!isLoadingMore) {
 
                     isLoadingMore = true;
-
                     TicketAdapter.FootViewHolder fvh = (TicketAdapter.FootViewHolder) recyclerView.findViewHolderForLayoutPosition(lastVisibleItemPosition);
                     //界面展示
                     fvh.tv.setText("加载更多中=。=");
@@ -293,8 +330,8 @@ public class ticketFragment extends BaseFragment {
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
             lastVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
-            if(lastVisibleItemPosition >= ticketAdapter.getItemCount()-1)
-            resetFootView();
+            if (lastVisibleItemPosition >= ticketAdapter.getItemCount() - 1)
+                resetFootView();
             else {
                 isLoadingMore = false;
             }

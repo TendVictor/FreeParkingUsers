@@ -115,6 +115,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if(bitmap != null)
         if (!bitmap.isRecycled())
             bitmap.recycle();
     }
