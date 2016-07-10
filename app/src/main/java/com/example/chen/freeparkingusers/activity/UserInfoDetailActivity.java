@@ -20,11 +20,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.chen.freeparkingusers.R;
 import com.example.chen.freeparkingusers.net.Config;
+import com.example.chen.freeparkingusers.net.ImageLoader;
 import com.example.chen.freeparkingusers.net.NetPostConnection;
 import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.UpCompletionHandler;
@@ -32,6 +34,7 @@ import com.qiniu.android.storage.UpProgressHandler;
 import com.qiniu.android.storage.UploadManager;
 import com.qiniu.android.storage.UploadOptions;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -60,11 +63,14 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
 
     private Uri photoUri;
     private Uri cameraUri;
-    private Intent lastIntent;
 
     private String tokens = null;
+    private String userName;
+    private String userImg;
 
     private ImageView ivBack, ivLogout, ivUserImg;
+
+    private ProgressBar pb_img_loader;
 
     private EditText evUserName;
 
@@ -79,12 +85,15 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
                     Toast.makeText(UserInfoDetailActivity.this, "获取token失败", Toast.LENGTH_SHORT).show();
                     break;
                 case 0x2://获取token成功
+                    Log.d("tokens获取成功", tokens);
                     uploadUsrImg();
                     break;
                 case 0x3://网络原因
                     Toast.makeText(UserInfoDetailActivity.this, "网络原因获取失败", Toast.LENGTH_SHORT).show();
                     break;
-                case 0x4:
+                case 0x4://获取个人信息成功
+                    Log.d("0x4",userImg);
+                    downloadImg();
                     break;
             }
         }
@@ -92,12 +101,22 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
 
     };
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_userinfo);
+        if(Config.username != null){
+            applyForUserInfo(Config.username);
+            System.out.println(Config.username+"     lallaallalal");
+        }
         initView();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (!bitmap.isRecycled())
+            bitmap.recycle();
     }
 
 
@@ -135,6 +154,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
                 choosePhotoType();
                 break;
             case R.id.tv_modify_userinfo:
+                applyforToken();
                 break;
             case R.id.tv_modifypassword:
                 break;
@@ -164,23 +184,23 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     private void takePhoto() {
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        String sdState = Environment.getExternalStorageState();
-        if (sdState.equalsIgnoreCase(Environment.MEDIA_MOUNTED)) {
-            File toFile = new File(Environment.getExternalStorageDirectory(), IMAGE_FILE_NAME);
-            try {
-                if (!toFile.exists())
-                    toFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            cameraUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory()
-                    , IMAGE_FILE_NAME));
-            Log.d("cameraUri", cameraUri + "");
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
-        }
-
+//        String sdState = Environment.getExternalStorageState();
+//        if (sdState.equalsIgnoreCase(Environment.MEDIA_MOUNTED)) {
+//            File toFile = new File(Environment.getExternalStorageDirectory(), IMAGE_FILE_NAME);
+//            try {
+//                if (!toFile.exists())
+//                    toFile.createNewFile();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+        cameraUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory()
+                , IMAGE_FILE_NAME));
+//            Log.d("cameraUri", cameraUri + "");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
+//        }
+        Log.d("before", cameraUri + "");
         startActivityForResult(intent, SELECT_PIC_BY_TAKE_PHOTO);
-
+        Log.d("after", cameraUri + "");
 //        File file = new File(Environment.getExternalStorageDirectory() + IMAGE_FILE_NAME);
 //        cameraUri = Uri.fromFile(file);
 //        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -198,17 +218,20 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("data", data.toString());
         if (data != null) {
             switch (requestCode) {
                 case SELECT_PIC_BY_PICK_PHOTO:
                     if (resultCode == Activity.RESULT_OK) {
                         pictureFromLocal(data);
-                        applyforToken();
                     }
                     break;
                 case SELECT_PIC_BY_TAKE_PHOTO:
-                    pictureFromTakingPhoto();
+//                    Bundle bundle = data.getExtras();
+//                    bitmap = data.getParcelableExtra("data");
+                    Log.d("bitmap", bitmap.toString());
+
+//                    pictureFromTakingPhoto();
                     break;
                 case CROP_BY_CAMERA://裁剪
 //                    finishCrop(data);
@@ -236,7 +259,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
 //                ivUserImg.setImageDrawable(roundedBitmapDrawable);
 //            }
         }
-
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     //上传使用七牛云
@@ -245,24 +268,29 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
             ByteArrayOutputStream output = new ByteArrayOutputStream();//初始化一个流对象
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);//把bitmap100%高质量压缩 到 output对象里
 
-            bitmap.recycle();//自由选择是否进行回收
+//            bitmap.recycle();//自由选择是否进行回收
 
 
-            byte[] result = output.toByteArray();//转换成功了try {
+            byte[] result = output.toByteArray();
+//            output.flush();
             output.close();
 
             UploadManager uploadManager = new UploadManager();
-            uploadManager.put(result, "user", tokens, new UpCompletionHandler() {
+
+
+            Log.d("tokens", result.length + "  and the tokens is: " + tokens);
+            uploadManager.put(result, "user1", tokens, new UpCompletionHandler() {
                 @Override
                 public void complete(String key, ResponseInfo info, JSONObject response) {
-                    Log.i("qiniu", key + ",\r\n " + info + ",\r\n " + response);
+
+                    Log.d("qiniu", key + ",\r\n " + info + ",\r\n " + response);
                 }
             }, new UploadOptions(null, null, false, new UpProgressHandler() {
                 @Override
                 public void progress(String key, double percent) {
 
                 }
-            },null));
+            }, null));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -294,8 +322,45 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
 
     //退出登录
     private void logout() {
+        Config.username = null;
+    }
+
+    //修改个人信息
+    private void modifyUserInfo() {
+        userName = evUserName.getText().toString();
 
     }
+
+    //获取个人信息
+    private void applyForUserInfo(String user_id) {
+        new NetPostConnection(Config.URL_GET_USERINFO, new NetPostConnection.SuccessCallback() {
+            @Override
+            public void onSuccess(String result) throws JSONException {
+                JSONArray jsonArray = new JSONArray(result);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject object = jsonArray.getJSONObject(i);
+                    userName = object.getString("user_name");
+                    userImg = object.getString("user_img");
+                }
+                handler.obtainMessage(0x4).sendToTarget();
+            }
+        }, new NetPostConnection.FailCallback() {
+            @Override
+            public void onFail() {
+                handler.obtainMessage(0x3).sendToTarget();
+            }
+        }, "user_id", user_id);
+    }
+
+    //七牛云下载图片
+    private void downloadImg() {
+        if(userImg != null){
+            userImg.replace("\\","");
+            Log.d("downloadImg", userImg);
+            ImageLoader.getInstance(this).bindBitmap(userImg,R.drawable.default_img,ivUserImg);
+        }
+    }
+
 
     //请求七牛云token
     private void applyforToken() {

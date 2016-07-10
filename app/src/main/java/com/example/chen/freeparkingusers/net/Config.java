@@ -17,7 +17,7 @@ public class Config {
     public static final String URL_SELLER_SEARCH = "http://139.129.24.127/parking_app/User/user_searchactivity.php";
     public static final String URL_GET_ALLTICKETS = "http://139.129.24.127/parking_app/User/user_getAllTickets.php";
     public static final String URL_GET_TOKENS = "http://139.129.24.127/parking_app/Qiniu/GetToken.php";
-
+    public static final String URL_GET_USERINFO = "http://139.129.24.127/parking_app/User/user_getinformation.php";
 
 
     public static byte[] toByteArray(InputStream input) throws IOException {

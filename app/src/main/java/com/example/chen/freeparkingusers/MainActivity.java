@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -14,8 +15,10 @@ import android.widget.ImageView;
 import com.example.chen.freeparkingusers.Fragments.BaseFragment;
 import com.example.chen.freeparkingusers.Fragments.SellerFragment;
 import com.example.chen.freeparkingusers.Fragments.ticketFragment;
+import com.example.chen.freeparkingusers.activity.LoginActivity;
 import com.example.chen.freeparkingusers.activity.SellerSearchActivity;
 import com.example.chen.freeparkingusers.activity.UserInfoDetailActivity;
+import com.example.chen.freeparkingusers.net.Config;
 import com.example.chen.freeparkingusers.view.ViewPagerIndicator;
 import com.xys.libzxing.zxing.activity.CaptureActivity;
 
@@ -88,7 +91,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         mIndicator.setBackgroundColor(Color.parseColor("#ffffff"));
         mViewPager.setAdapter(mAdapter);
 
-        mIndicator.setViewPager(mViewPager,0);
+        mIndicator.setViewPager(mViewPager, 0);
 
     }
 
@@ -96,6 +99,17 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     public void onStart() {
         super.onStart();
 
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(Config.username != null){
+            //username仍存在
+        }else{
+            //刷新操作
+        }
+        Log.d("onResume",Config.username+"");
     }
 
     @Override
@@ -130,8 +144,13 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     }
 
     public void intoUserInfo(){
-        Intent i = new Intent(MainActivity.this, UserInfoDetailActivity.class);
-        startActivity(i);
+        if(Config.username != null){
+            Intent i = new Intent(MainActivity.this, UserInfoDetailActivity.class);
+            startActivity(i);
+        }else{
+            Intent i = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(i);
+        }
     }
 
     public class OnPageChangeListener implements ViewPager.OnPageChangeListener{
