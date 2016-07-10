@@ -28,6 +28,7 @@ import com.example.chen.freeparkingusers.R;
 import com.example.chen.freeparkingusers.net.Config;
 import com.example.chen.freeparkingusers.net.ImageLoader;
 import com.example.chen.freeparkingusers.net.NetPostConnection;
+import com.example.chen.freeparkingusers.view.ProgressImageView;
 import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UpProgressHandler;
@@ -63,11 +64,13 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     private Uri photoUri;
     private Uri cameraUri;
 
+    private boolean isImgChange = false;
     private String tokens = null;
     private String userName;
     private String userImg;
 
-    private ImageView ivBack, ivLogout, ivUserImg;
+    private ImageView ivBack, ivLogout;
+    private ProgressImageView ivUserImg;
 
     private ProgressBar pb_img_loader;
 
@@ -92,13 +95,21 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
                     break;
                 case 0x4://获取个人信息成功
                     Log.d("0x4",userImg);
+                    updateUserInfo();
                     downloadImg();
+                    break;
+                case 0x5://修改个人信息成功：
+                    Toast.makeText(UserInfoDetailActivity.this, "修改个人信息成功", Toast.LENGTH_SHORT).show();
+                    break;
+                case 0x6://修改失败
+                    Toast.makeText(UserInfoDetailActivity.this, "修改个人信息失败，请重试", Toast.LENGTH_SHORT).show();
                     break;
             }
         }
 
 
     };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,7 +135,8 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     private void initView() {
         ivBack = (ImageView) findViewById(R.id.iv_back_userinfo);
         ivLogout = (ImageView) findViewById(R.id.iv_logout_userinfo);
-        ivUserImg = (ImageView) findViewById(R.id.iv_img_userinfo);
+//        ivUserImg = (ImageView) findViewById(R.id.iv_img_userinfo);
+        ivUserImg = (ProgressImageView) findViewById(R.id.iv_img_userinfo);
 
         evUserName = (EditText) findViewById(R.id.ev_showname_userinfo);
 
@@ -154,7 +166,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
                 choosePhotoType();
                 break;
             case R.id.tv_modify_userinfo:
-                applyforToken();
+                modifyUserInfo();
                 break;
             case R.id.tv_modifypassword:
                 break;
@@ -223,6 +235,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
             switch (requestCode) {
                 case SELECT_PIC_BY_PICK_PHOTO:
                     if (resultCode == Activity.RESULT_OK) {
+                        isImgChange = true;
                         pictureFromLocal(data);
                     }
                     break;
@@ -264,33 +277,37 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
 
     //上传使用七牛云
     private void uploadUsrImg() {
+        ivUserImg.setProgressEnable(true);
         try {
             ByteArrayOutputStream output = new ByteArrayOutputStream();//初始化一个流对象
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);//把bitmap100%高质量压缩 到 output对象里
 
-//            bitmap.recycle();//自由选择是否进行回收
-
-
             byte[] result = output.toByteArray();
-//            output.flush();
+            output.flush();
             output.close();
 
             UploadManager uploadManager = new UploadManager();
 
 
             Log.d("tokens", result.length + "  and the tokens is: " + tokens);
-            uploadManager.put(result, "user1", tokens, new UpCompletionHandler() {
+            UpCompletionHandler upHandler = new UpCompletionHandler() {
                 @Override
                 public void complete(String key, ResponseInfo info, JSONObject response) {
-
-                    Log.d("qiniu", key + ",\r\n " + info + ",\r\n " + response);
+                    Log.d("responseqiniu", key + "   ,\r\n " + info + ",\r\n" + response);
+                    ivUserImg.setProgressEnable(false);
+                    isImgChange = false;
                 }
-            }, new UploadOptions(null, null, false, new UpProgressHandler() {
-                @Override
-                public void progress(String key, double percent) {
+            };
 
-                }
-            }, null));
+
+            uploadManager.put(result,"user5",tokens,upHandler,new UploadOptions(null, null, false,
+                    new UpProgressHandler() {
+                        @Override
+                        public void progress(String key, double percent) {
+                            ivUserImg.setProgress((int) (percent * 100));
+                            Log.d("qiniu", key+ " : " + percent);
+                        }
+                    },null));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -328,7 +345,25 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     //修改个人信息
     private void modifyUserInfo() {
         userName = evUserName.getText().toString();
-
+        if(!checkInfoIsNull(userName,Config.username,userImg)){
+            new NetPostConnection(Config.URL_MODIFY_USER, new NetPostConnection.SuccessCallback() {
+                @Override
+                public void onSuccess(String result) throws JSONException {
+                    JSONObject object = new JSONObject(result);
+                    int res = object.getInt("state");
+                    if(res == 0){
+                        handler.obtainMessage(0x5).sendToTarget();
+                    }else{
+                        handler.obtainMessage(0x6).sendToTarget();
+                    }
+                }
+            }, new NetPostConnection.FailCallback() {
+                @Override
+                public void onFail() {
+                    handler.obtainMessage(0x3).sendToTarget();
+                }
+            },"user_id",Config.username,"user_name",userName,"user_img",userImg);
+        }
     }
 
     //获取个人信息
@@ -349,12 +384,21 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         }, "user_id", user_id);
     }
 
+    //登录成功后，更新信息
+    private void updateUserInfo() {
+        evUserName.setText(userName);
+        if(Config.username != null)
+            tvUserid.setText(Config.username);
+    }
+
     //七牛云下载图片
     private void downloadImg() {
         if(userImg != null){
             userImg.replace("\\","");
             Log.d("downloadImg", userImg);
-            ImageLoader.getInstance(this).bindBitmap(userImg,R.drawable.default_img,ivUserImg);
+            ImageLoader.getInstance(this).bindBitmap(userImg, R.drawable.default_img,
+                    ivUserImg.getImageView(),ImageLoader.getInstance(this).roundedBindStrategy);
+
         }
     }
 
@@ -394,7 +438,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
             RoundedBitmapDrawable roundedBitmapDrawable =
                     RoundedBitmapDrawableFactory.create(getResources(), bitmap);
             roundedBitmapDrawable.setCornerRadius(bitmap.getWidth() / 2);
-            ivUserImg.setImageDrawable(roundedBitmapDrawable);
+            ivUserImg.getImageView().setImageDrawable(roundedBitmapDrawable);
         }
     }
 
@@ -423,7 +467,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     }
 
 
-    //上传图片
+    //上传图片从本地
     private void pictureFromLocal(Intent data) {
         if (data == null) {
             Toast.makeText(this, "选择图片文件出错1", Toast.LENGTH_SHORT).show();
@@ -471,8 +515,10 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         }
         roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
         roundedBitmapDrawable.setCornerRadius(bitmap.getWidth() / 2);
-        ivUserImg.setImageDrawable(roundedBitmapDrawable);
+        ivUserImg.getImageView().setImageDrawable(roundedBitmapDrawable);
 
+        if(isImgChange)
+            applyforToken();
 
     }
 
@@ -509,5 +555,13 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         startActivityForResult(intent, CROP_BY_CAMERA);
     }
 
-
+    private boolean checkInfoIsNull(Object ... keys){
+        boolean someisNull = false;
+        for (int i = 0; i < keys.length; i++){
+            if(keys[i] == null)
+                someisNull = true;
+        }
+        Log.d("someisNull" , someisNull+"");
+        return someisNull;
+    }
 }

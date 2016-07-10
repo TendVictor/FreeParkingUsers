@@ -49,21 +49,13 @@
         android:layout_width="match_parent"
         android:layout_height="180dp">
 
-        <ImageView
+        <com.example.chen.freeparkingusers.view.ProgressImageView
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_centerInParent="true"
-            android:background="@drawable/iv_userinfo_addimg"
             android:scaleType="fitXY"
             android:id="@+id/iv_img_userinfo"
             android:visibility="visible"/>
-
-        <ProgressBar
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_centerInParent="true"
-            android:id="@+id/pb_img_loader"
-            android:visibility="invisible"/>
 
     </RelativeLayout>
 

@@ -10,6 +10,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.StatFs;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.widget.ImageView;
@@ -94,6 +96,16 @@ public class ImageLoader {
             imageView.setImageBitmap(bitmap);
         }
     };
+
+    public BindStrategy roundedBindStrategy = new BindStrategy() {
+        @Override
+        public void bindBitmapToTarget(ImageView imageView, Bitmap bitmap) {
+            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(mContext.getResources(), bitmap);
+            roundedBitmapDrawable.setCornerRadius(bitmap.getWidth() / 2);
+            imageView.setImageDrawable(roundedBitmapDrawable);
+        }
+    };
+
 
     public void setDefaultBindStrategy(BindStrategy defaultBindStrategy) {
         if (defaultBindStrategy != null) {

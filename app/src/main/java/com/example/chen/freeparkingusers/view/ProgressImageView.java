@@ -1,12 +1,15 @@
 package com.example.chen.freeparkingusers.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.Xfermode;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.AttributeSet;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -37,6 +40,13 @@ public class ProgressImageView extends RelativeLayout {
 
     public ImageView getImageView() {
         return mImageView;
+    }
+
+    public void setRounded(Bitmap bitmap){
+        RoundedBitmapDrawable roundedBitmapDrawable =
+                RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+        roundedBitmapDrawable.setCornerRadius(bitmap.getWidth() / 2);
+        mImageView.setImageDrawable(roundedBitmapDrawable);
     }
 
     public void setProgress(int progress) {
