@@ -54,10 +54,10 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
 
     public static final int CROP_BY_CAMERA = 3;
 
-    private int output_X = 480;
-    private int output_Y = 480;
+    private int output_X = 200;
+    private int output_Y = 200;
 
-    private static final String IMAGE_FILE_NAME = "temp.jpg";
+    private static final String IMAGE_FILE_NAME = "temp.JPG";
 
     private Bitmap bitmap;
 
@@ -116,7 +116,6 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_userinfo);
-        Config.username = "13823151843";
         if (Config.username != null) {
             applyForUserInfo(Config.username);
             System.out.println(Config.username + "     lallaallalal");
@@ -137,7 +136,6 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     private void initView() {
         ivBack = (ImageView) findViewById(R.id.iv_back_userinfo);
         ivLogout = (ImageView) findViewById(R.id.iv_logout_userinfo);
-//        ivUserImg = (ImageView) findViewById(R.id.iv_img_userinfo);
         ivUserImg = (ProgressImageView) findViewById(R.id.iv_img_userinfo);
 
         evUserName = (EditText) findViewById(R.id.ev_showname_userinfo);
@@ -207,7 +205,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory()
                 , IMAGE_FILE_NAME));
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
         Log.d("before", cameraUri + "");
         startActivityForResult(intent, SELECT_PIC_BY_TAKE_PHOTO);
         Log.d("after", cameraUri + "");
@@ -223,7 +221,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data != null) {
+        if (data != null || requestCode == SELECT_PIC_BY_TAKE_PHOTO) {
             switch (requestCode) {
                 case SELECT_PIC_BY_PICK_PHOTO:
                     if (resultCode == Activity.RESULT_OK) {
@@ -232,15 +230,10 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
                     }
                     break;
                 case SELECT_PIC_BY_TAKE_PHOTO:
-                    Log.d("intent", data.toString());
-                    break;
-                case CROP_BY_CAMERA://裁剪
-//                    finishCrop(data);
+                    if(data != null && resultCode == RESULT_OK)
+                            finishCrop(data);
                     break;
             }
-        } else {
-
-            Log.d("here", "here");
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -403,7 +396,19 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     private void finishCrop(Intent intent) {
         if (intent != null) {
             Bundle extras = intent.getExtras();
-            Bitmap bitmap = extras.getParcelable("data");
+            bitmap = extras.getParcelable("data");
+
+            int w = bitmap.getWidth();
+            int h = bitmap.getHeight();
+
+            int wh = w > h ? h : w;
+
+            int retX =  w > h ? (w - h ) /2 : 0;
+            int retY =  w > h ? 0 : (h - w)/2;
+
+            Log.d("bitmap params", "w: " + w +" h: " + h + " retX: "  + retX + " retY:" + retY);
+            bitmap = Bitmap.createBitmap(bitmap, retX, retY, wh,wh,null, false);
+
 
             RoundedBitmapDrawable roundedBitmapDrawable =
                     RoundedBitmapDrawableFactory.create(getResources(), bitmap);
@@ -511,9 +516,9 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         intent.putExtra("outputX", output_X);
         intent.putExtra("outputY", output_Y);
         // 传递原图路径
-        File cropFile = new File(Environment.getExternalStorageDirectory() + IMAGE_FILE_NAME);
-        Uri cropImageUri = Uri.fromFile(cropFile);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, cropImageUri);
+//        File cropFile = new File(Environment.getExternalStorageDirectory(),IMAGE_FILE_NAME);
+//        Uri cropImageUri = Uri.fromFile(cropFile);
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, cropImageUri);
         // 设置裁剪区域的形状，默认为矩形，也可设置为原形
 //        intent.putExtra("circleCrop", true);
         // 设置图片的输出格式

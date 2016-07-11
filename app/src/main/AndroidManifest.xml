@@ -15,8 +15,7 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboardHidden"
-            android:launchMode="singleTask"
-            >
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -28,7 +27,8 @@
         <activity
             android:name=".activity.UserInfoDetailActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
+            </activity>
         <activity
             android:name=".activity.QRCodeActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
@@ -36,8 +36,13 @@
         <activity android:name=".activity.CampaignDetailActivity" />
         <activity
             android:name=".activity.LoginActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        </activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
+            android:name=".activity.ModifyPasswordActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
+            android:name=".activity.RegisterActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
     </application>
 
 </manifest>
