@@ -72,6 +72,7 @@ public class SellerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     }
 
+
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         switch (getItemViewType(position)) {

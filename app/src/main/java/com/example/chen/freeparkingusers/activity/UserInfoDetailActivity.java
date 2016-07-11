@@ -417,30 +417,6 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         }
     }
 
-    //设置从拍照中获取
-    private void pictureFromTakingPhoto() {
-        File tempFile = new File(Environment.getExternalStorageDirectory(), IMAGE_FILE_NAME);
-        Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(Uri.fromFile(tempFile), "image/*");
-
-//        Log.d("tempFile",tempFile.)
-        // 设置裁剪
-        intent.putExtra("crop", "true");
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tempFile));
-
-
-        // aspectX , aspectY :宽高的比例
-        intent.putExtra("aspectX", 1);
-        intent.putExtra("aspectY", 1);
-
-        // outputX , outputY : 裁剪图片宽高
-        intent.putExtra("outputX", output_X);
-        intent.putExtra("outputY", output_Y);
-        intent.putExtra("return-data", false);
-
-        startActivityForResult(intent, CROP_BY_CAMERA);
-    }
-
 
     //上传图片从本地
     private void pictureFromLocal(Intent data) {
@@ -469,8 +445,6 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
 
-
-//            bitmap = miniBitmapFromUri(picturePath);
         } else {
             // Method 2
             try {
@@ -486,7 +460,6 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            // Method 3
         }
         roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
         roundedBitmapDrawable.setCornerRadius(bitmap.getWidth() / 2);
@@ -495,39 +468,6 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         if (isImgChange)
             applyforToken();
 
-    }
-
-    /**
-     * 裁减图片操作
-     *
-     * @param uri
-     */
-    private void startCropImage(Uri uri) {
-        Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(uri, "image/*");
-        // 使图片处于可裁剪状态
-        intent.putExtra("crop", "true");
-        // 裁剪框的比例（根据需要显示的图片比例进行设置）
-        intent.putExtra("aspectX", 2);
-        intent.putExtra("aspectY", 2);
-        // 让裁剪框支持缩放
-        intent.putExtra("scale", true);
-        // 裁剪后图片的大小（注意和上面的裁剪比例保持一致）
-        intent.putExtra("outputX", output_X);
-        intent.putExtra("outputY", output_Y);
-        // 传递原图路径
-//        File cropFile = new File(Environment.getExternalStorageDirectory(),IMAGE_FILE_NAME);
-//        Uri cropImageUri = Uri.fromFile(cropFile);
-//        intent.putExtra(MediaStore.EXTRA_OUTPUT, cropImageUri);
-        // 设置裁剪区域的形状，默认为矩形，也可设置为原形
-//        intent.putExtra("circleCrop", true);
-        // 设置图片的输出格式
-        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-        // return-data=true传递的为缩略图，小米手机默认传递大图，所以会导致onActivityResult调用失败
-        intent.putExtra("return-data", false);
-        // 是否需要人脸识别
-//        intent.putExtra("noFaceDetection", true);
-        startActivityForResult(intent, CROP_BY_CAMERA);
     }
 
     private boolean checkInfoIsNull(Object... keys) {

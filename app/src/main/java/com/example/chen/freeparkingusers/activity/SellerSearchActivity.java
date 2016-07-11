@@ -1,6 +1,7 @@
 package com.example.chen.freeparkingusers.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -94,6 +95,15 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
         getDatas();
 
         searchSellerAdapter = new SellerAdapter(this, (ArrayList<SellerInfo>) searchDatas);
+        searchSellerAdapter.setOnItemClickListener(new SellerAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                SellerInfo seller_info = searchDatas.get(position);
+                Intent intent = new Intent(SellerSearchActivity.this, SellerDetailActivity.class);
+                intent.putExtra("seller_info", seller_info);
+                startActivity(intent);
+            }
+        });
         searchRecyclerView.setAdapter(searchSellerAdapter);
     }
 
