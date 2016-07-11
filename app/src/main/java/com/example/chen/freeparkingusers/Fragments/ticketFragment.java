@@ -54,14 +54,16 @@ public class ticketFragment extends BaseFragment {
 
     private MyScrollListener mScrollListener;
 
+    private View rootView = null;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle SavedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_ticket, null, false);
+        rootView = inflater.inflate(R.layout.fragment_ticket, null, false);
         initData();
         initVariables();
-        initViewAndEvents(view);
+        initViewAndEvents(rootView);
         FetchTicketData();
-        return view;
+        return rootView;
     }
 
     private void initData() {
@@ -91,9 +93,9 @@ public class ticketFragment extends BaseFragment {
     private void initViewAndEvents(View view) {
 
         btnRefresh = $(view, R.id.btn_refresh);
-        tvNodata = $(view,R.id.tv_NoData);
+        tvNodata = $(view, R.id.tv_NoData);
 
-        if(Config.username == null){
+        if (Config.username == null) {
             btnRefresh.setText("点我登录");
             tvNodata.setText("登录后才可以查看停车券哦");
         }
@@ -101,16 +103,17 @@ public class ticketFragment extends BaseFragment {
         btnRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(Config.username == null){
+                if (Config.username == null) {
                     Intent i = new Intent(getActivity(), LoginActivity.class);
                     startActivity(i);
-                }else{
+                } else {
                     FetchTicketData();
                 }
             }
         });
 
         llContainer = $(view, R.id.ll_nodata_container);
+
         recyclerView = $(view, R.id.rv_ticket);
         swipeRefreshLayout = $(view, R.id.sl_ticket);
         swipeRefreshLayout.setColorSchemeColors(Color.parseColor("#2CBEC5"));
@@ -132,20 +135,20 @@ public class ticketFragment extends BaseFragment {
 
     public static final int LOADMORE = 0x120;
 
-    public void RefreshTicketInfo(){
+    public void RefreshTicketInfo() {
 
-         Log.e("TAGOfUser_id",Config.username+"");
-         FetchTicketData();
+        FetchTicketData();
+
     }
 
     private void FetchTicketData() {
-        if(Config.username == null){
-            if (swipeRefreshLayout != null){
+        if (Config.username == null) {
+            if (swipeRefreshLayout != null) {
                 swipeRefreshLayout.setRefreshing(false);
                 ChangeViewState(View.VISIBLE);
             }
             //对界面做处理 改成要去登陆的界面
-        }else{
+        } else {
             new NetPostConnection(Config.URL_GET_ALLTICKETS, new NetPostConnection.SuccessCallback() {
                 @Override
                 public void onSuccess(String result) throws JSONException {
@@ -172,8 +175,8 @@ public class ticketFragment extends BaseFragment {
             switch (msg.what) {
                 case NET_SUCCESS:
 
-                    if(swipeRefreshLayout != null)
-                    swipeRefreshLayout.setRefreshing(false);
+                    if (swipeRefreshLayout != null)
+                        swipeRefreshLayout.setRefreshing(false);
 
                     String result = (String) msg.obj;
 
@@ -188,7 +191,6 @@ public class ticketFragment extends BaseFragment {
                                 && llLayoutManager.findLastCompletelyVisibleItemPosition() >= ticketAdapter.getItemCount() - 1) {
                             mScrollListener.setHasMore(false);
                             mScrollListener.resetFootView();
-                            Log.e("TAG", "Here");
                         }
                     }
 
@@ -196,7 +198,7 @@ public class ticketFragment extends BaseFragment {
                 case NET_FAILURE:
 
                     swipeRefreshLayout.setRefreshing(false);
-                    Toast.makeText(getActivity(),"网络错误,请检查",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "网络错误,请检查", Toast.LENGTH_SHORT).show();
 
                     break;
                 case LOADMORE:
@@ -214,24 +216,24 @@ public class ticketFragment extends BaseFragment {
     };
 
     private void ChangeViewState(int state) {
+
         if (state == View.GONE) {
             llContainer.setVisibility(View.GONE);
             swipeRefreshLayout.setVisibility(View.VISIBLE);
-        }else{
+
+        } else {
             swipeRefreshLayout.setVisibility(View.GONE);
             llContainer.setVisibility(View.VISIBLE);
 
-            if(Config.username == null){
+            if (Config.username == null) {
 
                 btnRefresh.setVisibility(View.VISIBLE);
                 btnRefresh.setText("点我登录");
                 tvNodata.setText("登录后才可以查看停车券哦");
 
-            }else{
-
+            } else {
                 btnRefresh.setVisibility(View.GONE);
                 tvNodata.setText("暂时没有停车券,快去参加活动吧");
-
             }
 
         }
@@ -248,8 +250,11 @@ public class ticketFragment extends BaseFragment {
             return false;
         } else {
             try {
+
                 ChangeViewState(View.GONE);
+
                 dataSet.clear();
+
                 JSONArray array = new JSONArray(result);
                 for (int i = 0; i < array.length(); i++) {
                     JSONObject tmpObj = (JSONObject) array.get(i);

@@ -133,6 +133,7 @@ public class LoginActivity extends Activity {
             if(flag == 0){
                 //保存username
                 Config.username =  username;
+
                 Intent i = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(i);
                 finish();

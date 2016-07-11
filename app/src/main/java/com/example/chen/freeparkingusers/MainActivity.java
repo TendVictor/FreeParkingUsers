@@ -5,11 +5,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -47,10 +47,25 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if(savedInstanceState != null)
+        savedInstanceState.clear();
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         initTopView();
         initCenterView();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mTicketFragment.RefreshTicketInfo();
     }
 
     private void initTopView() {
@@ -106,9 +121,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     @Override
     public void onResume(){
         super.onResume();
+
         //刷新操作
         mTicketFragment.RefreshTicketInfo();
-        Log.d("onResume",Config.username+"");
     }
 
     @Override
