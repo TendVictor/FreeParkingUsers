@@ -31,31 +31,24 @@
             android:background="@drawable/ev_search"
             android:hint="搜索"
             android:paddingLeft="24dp"
-            android:textSize="14sp"
+            android:singleLine="true"
             android:textColor="@color/colorTextDark"
-            android:singleLine="true"/>
+            android:textSize="14sp" />
 
         <View
             android:layout_width="12dp"
             android:layout_height="28dp"
             android:layout_gravity="center"
-            android:layout_margin="8dp"/>
+            android:layout_margin="8dp" />
 
     </LinearLayout>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:layout_marginTop="16dp"
-        android:id="@+id/swipe_search"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_search"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_search"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    </android.support.v7.widget.RecyclerView>
 
-        </android.support.v7.widget.RecyclerView>
-
-    </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>

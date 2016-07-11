@@ -60,12 +60,12 @@ public class SellerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     public final int getItemViewCount() {
-        return mDatas.size() - 1;
+        return mDatas.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position >= mDatas.size() - 1)
+        if (position >= getItemCount()-1)
             return FOOT_TYPE;
         else
             return BODY_TYPE;

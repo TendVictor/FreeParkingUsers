@@ -16,7 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.example.chen.freeparkingusers.R;
-import com.example.chen.freeparkingusers.adapter.SellerAdapter;
+import com.example.chen.freeparkingusers.adapter.SellerSearchAdapter;
 import com.example.chen.freeparkingusers.item.SellerInfo;
 import com.example.chen.freeparkingusers.net.Config;
 import com.example.chen.freeparkingusers.net.NetPostConnection;
@@ -41,11 +41,10 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
     private ImageView backBtn;
 
 
-    private SwipeRefreshLayout searchSwipeLayout;
     private RecyclerView searchRecyclerView;
 
     private List<SellerInfo> searchDatas;
-    private SellerAdapter searchSellerAdapter;
+    private SellerSearchAdapter searchSellerAdapter;
 
     private Handler handler = new Handler(){
 
@@ -53,7 +52,6 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
         public void handleMessage(Message msg){
             switch (msg.what){
                 case 0x0:
-                    number_limit+=10;
                     searchSellerAdapter.notifyDataSetChanged();
                     break;
                 case 0x1:
@@ -85,17 +83,15 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
         backBtn.setOnClickListener(this);
         searchEdit.addTextChangedListener(new mTextWatcher());
 
-        searchSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_search);
         searchRecyclerView = (RecyclerView) findViewById(R.id.rv_search);
 
         searchRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        searchSwipeLayout.setOnRefreshListener(new onRefreshListener());
 
         searchDatas = new ArrayList<>();
-        getDatas();
+        startSearchSeller("",0);
 
-        searchSellerAdapter = new SellerAdapter(this, (ArrayList<SellerInfo>) searchDatas);
-        searchSellerAdapter.setOnItemClickListener(new SellerAdapter.onItemClickListener() {
+        searchSellerAdapter = new SellerSearchAdapter(this, (ArrayList<SellerInfo>) searchDatas);
+        searchSellerAdapter.setOnItemClickListener(new SellerSearchAdapter.onItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 SellerInfo seller_info = searchDatas.get(position);
@@ -104,6 +100,7 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
                 startActivity(intent);
             }
         });
+
         searchRecyclerView.setAdapter(searchSellerAdapter);
     }
 

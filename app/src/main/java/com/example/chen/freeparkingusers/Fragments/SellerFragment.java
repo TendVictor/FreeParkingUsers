@@ -75,7 +75,7 @@ public class SellerFragment extends BaseFragment{
             }
             if(footHolder == null)
                 footHolder = (SellerAdapter.FootViewHolder)
-                        mRecyclerView.findViewHolderForAdapterPosition(totalItemCount - 1);
+                        mRecyclerView.findViewHolderForAdapterPosition(totalItemCount);
 
             mSellerAdapter.notifyDataSetChanged();
             mSwipeLayout.setRefreshing(false);
@@ -97,7 +97,7 @@ public class SellerFragment extends BaseFragment{
             public void onScrollStateChanged(RecyclerView recyclerView, int newstate) {
                 super.onScrollStateChanged(recyclerView, newstate);
                 Log.d("loadmoreBefore", isLoading + "");
-                if (last >= totalItemCount - 1 && !isLoading && loadingAble) {
+                if (last >= totalItemCount  && !isLoading && loadingAble) {
                     isLoading = true;
                     loadmore();
                 }
@@ -153,9 +153,9 @@ public class SellerFragment extends BaseFragment{
     public void nomoreData(){
         if(footHolder != null)
             footHolder.setIsHaveData(true);
-        if(mRecyclerView.findViewHolderForAdapterPosition(totalItemCount - 1) != null){
+        if(mRecyclerView.findViewHolderForAdapterPosition(totalItemCount) != null){
             footHolder =
-                    (SellerAdapter.FootViewHolder) mRecyclerView.findViewHolderForAdapterPosition(totalItemCount-1);
+                    (SellerAdapter.FootViewHolder) mRecyclerView.findViewHolderForAdapterPosition(totalItemCount);
             footHolder.setIsHaveData(true);
         }
         loadingAble = false;
