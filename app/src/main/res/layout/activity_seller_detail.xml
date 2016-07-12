@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="12dp">
 
-                <ScrollView
+                <LinearLayout
                     android:id="@+id/imageScrollView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -30,17 +30,12 @@
                     android:overScrollMode="never"
                     android:scrollbars="none">
 
-                    <RelativeLayout
+                    <ImageView
+                        android:id="@+id/ivSellerImage"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <ImageView
-                            android:id="@+id/ivSellerImage"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:scaleType="centerCrop" />
-                    </RelativeLayout>
-                </ScrollView>
+                        android:layout_height="wrap_content"
+                        android:scaleType="centerCrop" />
+                </LinearLayout>
             </RelativeLayout>
 
             <LinearLayout

@@ -49,7 +49,7 @@ public class SellerDetailActivity extends Activity {
     private OverScrollView overScrollView;
     private ImageView titleBackground;
     private LinearLayout layoutContent;
-    private ScrollView imageScrollView;
+    private LinearLayout imageScrollView;
     private RelativeLayout.LayoutParams scrollLayoutParams;
 
     private SellerInfo sellerInfo;
@@ -172,13 +172,13 @@ public class SellerDetailActivity extends Activity {
     int titleLayoutHeight;
 
     private void configureImageScroll() {
-        imageScrollView = (ScrollView) findViewById(R.id.imageScrollView);
+        imageScrollView = (LinearLayout) findViewById(R.id.imageScrollView);
 
         imageHeight = getResources().getDisplayMetrics().widthPixels;
         imageScrollHeight = (int) (imageHeight * 0.8f);
 
         findViewById(R.id.ivSellerImage).setLayoutParams(
-                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, imageHeight));
+                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, imageHeight));
         scrollLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, imageScrollHeight);
         imageScrollView.setLayoutParams(scrollLayoutParams);
 
