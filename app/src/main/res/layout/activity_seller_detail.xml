@@ -22,17 +22,6 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="12dp">
 
-                <TextView
-                    android:id="@+id/tvSellerName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginBottom="12dp"
-                    android:layout_marginLeft="20dp"
-                    android:textColor="#ffffff"
-                    android:textSize="@dimen/text_size_larger" />
-
                 <ScrollView
                     android:id="@+id/imageScrollView"
                     android:layout_width="match_parent"
@@ -200,10 +189,13 @@
                     android:src="@drawable/back_btn_img_white" />
 
                 <TextView
+                    android:id="@+id/tvSellerName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
-                    android:text="商家详情"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:maxWidth="240dp"
                     android:textColor="#ffffff"
                     android:textSize="@dimen/text_size_larger" />
             </LinearLayout>
