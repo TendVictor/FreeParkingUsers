@@ -16,6 +16,8 @@
     <color name="colorAppTheme">#2CBEC5</color>
 
     <color name="colorActionBar">#3EBDC6</color>
+    <color name="colorAlpha">#00ffffff</color>
+    <color name="colorAlphaDark">#99eeeeee</color>
 
     <color name="titleColorUserInfo">#09bdc5</color>
     <color name="textColorUserInfo">#9f9f9f</color>
