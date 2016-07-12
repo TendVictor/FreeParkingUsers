@@ -15,14 +15,18 @@
  */
 package com.xys.libzxing.zxing.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -74,6 +78,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     private static final String SCAN_QRCode_URL = "http://139.129.24.127/parking_app/User/user_scanQRcode.php";
 
     private String username = null;
+    private AlertDialog alertDialog = null;
     private ProgressDialog pd = null;
 
     public Handler getHandler() {
@@ -87,9 +92,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-
         username = getIntent().getStringExtra("user_id");
-
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_capture);
@@ -121,7 +124,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             // The activity was paused but not stopped, so the surface still
             // exists. Therefore
             // surfaceCreated() won't be called, so init the camera here.
-            initCamera(scanPreview.getHolder());
+            getCameraPermissionAndInitCamera();
         } else {
             // Install the callback and wait for surfaceCreated() to init the
             // camera.
@@ -131,6 +134,38 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         inactivityTimer.onResume();
     }
 
+
+    //判断系统是否为6.0且获取权限(拍照)
+    public void getCameraPermissionAndInitCamera(){
+
+        int  currentapiVersion = android.os.Build.VERSION.SDK_INT;
+        //若是大于6.0，则需代码获取权限
+        if(currentapiVersion >= 23){
+            if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) !=
+                    PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},REQUEST_CAMERA);
+            }else{
+                initCamera(scanPreview.getHolder());
+            }
+        }else{//版本低于6.0
+            initCamera(scanPreview.getHolder());
+        }
+
+    }
+
+    private  static  final int REQUEST_CAMERA = 0x110;
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
+        if(requestCode == REQUEST_CAMERA){
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                initCamera(scanPreview.getHolder());
+            }else{//拒绝了
+                Toast.makeText(CaptureActivity.this,"摄像头权限拒绝",Toast.LENGTH_SHORT).show();
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
     @Override
     protected void onPause() {
         if (handler != null) {
@@ -217,6 +252,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         });
     }
 
+
     private static  final int NET_SUCCESS = 0x123;
     private static  final int NET_FAILURE = 0x110;
     private Handler nethandler = new Handler(){
@@ -228,14 +264,21 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                      String result = (String) msg.obj;
                      Log.e("TAG",result);
                      if(parseJsonResult(result)){
-                         new AlertDialog.Builder(CaptureActivity.this).setMessage("添加成功").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                         new AlertDialog.Builder(CaptureActivity.this).setMessage("添加成功").setPositiveButton("点击返回", new DialogInterface.OnClickListener() {
                              @Override
                              public void onClick(DialogInterface dialog, int which) {
                                  finish();
+                                 overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                              }
                          }).setCancelable(false).show();
                      }else{
-                         Toast.makeText(CaptureActivity.this,"不合法的ticket_id",Toast.LENGTH_SHORT).show();
+                         new AlertDialog.Builder(CaptureActivity.this).setMessage("不合法的ticket信息,请商家检查停车券").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                             @Override
+                             public void onClick(DialogInterface dialog, int which) {
+                                 finish();
+                                 overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                             }
+                         }).setCancelable(false).show();
                      }
                      break;
                  case NET_FAILURE:

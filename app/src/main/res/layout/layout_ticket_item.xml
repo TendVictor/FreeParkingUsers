@@ -37,7 +37,10 @@
                 android:gravity="left|bottom"
                 android:text="汉堡王送停车券"
                 android:textColor="#1b1b1b"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                />
 
             <TextView
                 android:id="@+id/tv_address"

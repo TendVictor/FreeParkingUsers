@@ -35,7 +35,8 @@
             android:hint="搜索"
             android:paddingLeft="24dp"
             android:textColorHint="#737373"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:focusable="false"/>
 
         <ImageView
             android:id="@+id/iv_scan"
