@@ -1,10 +1,12 @@
 package com.example.chen.freeparkingusers.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,6 +16,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.Log;
@@ -47,6 +51,8 @@ import java.io.IOException;
  * Created by chen on 16/7/6.
  */
 public class UserInfoDetailActivity extends Activity implements View.OnClickListener {
+
+    public static final int REQUEST_CAMERA = 0;
 
     public static final int SELECT_PIC_BY_TAKE_PHOTO = 1;
 
@@ -186,7 +192,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
                 .setMessage("选择图片上传方式").setNeutralButton("选择拍照", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        takePhoto();
+                        getAppVersionAndTakePermission();
                     }
 
 
@@ -197,6 +203,23 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
                     }
                 }).create();
         dialog.show();
+    }
+
+    //判断系统是否为6.0且获取权限(拍照)
+    public void getAppVersionAndTakePermission(){
+
+        int  currentapiVersion=android.os.Build.VERSION.SDK_INT;
+        //若是大于6.0，则需代码获取权限
+        if(currentapiVersion >= 23){
+            if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) !=
+                    PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},REQUEST_CAMERA);
+            }else{
+                takePhoto();
+            }
+        }else{//版本低于6.0
+                takePhoto();
+        }
     }
 
     //选择拍照
@@ -217,6 +240,18 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
         startActivityForResult(intent, SELECT_PIC_BY_PICK_PHOTO);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
+        if(requestCode == REQUEST_CAMERA){
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                takePhoto();
+            }else{//拒绝了
+                Toast.makeText(UserInfoDetailActivity.this,"摄像头权限拒绝",Toast.LENGTH_SHORT).show();
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override

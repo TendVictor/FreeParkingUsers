@@ -11,7 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,7 +44,7 @@ public class SellerFragment extends BaseFragment{
     private final String search_word = "";
     private int number_limit = 0;
 
-    private LinearLayout nodataLinear;
+    private RelativeLayout nodataLinear;
     private TextView tv_showNodata;
 
     private SwipeRefreshLayout mSwipeLayout;
@@ -98,7 +98,7 @@ public class SellerFragment extends BaseFragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container , Bundle SavedInstanceState){
         View view = inflater.inflate(R.layout.fragment_campaign,null,false);
 
-        nodataLinear = (LinearLayout) view.findViewById(R.id.container_campaign_nodata);
+        nodataLinear = (RelativeLayout) view.findViewById(R.id.container_campaign_nodata);
         tv_showNodata = (TextView) view.findViewById(R.id.tv_littledata);
 
         mLayoutManager = new LinearLayoutManager(getActivity());
