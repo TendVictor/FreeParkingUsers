@@ -1,6 +1,8 @@
 package com.example.chen.freeparkingusers.view;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -28,10 +30,13 @@ public class OverScrollView extends ScrollView {
 
         ViewTreeObserver observer = this.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onGlobalLayout() {
-                if (getChildCount() != 0)
+                getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                if (getChildCount() != 0) {
                     mChild = getChildAt(0);
+                }
             }
         });
     }

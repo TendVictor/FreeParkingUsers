@@ -26,6 +26,8 @@
                     android:id="@+id/imageScrollView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fadingEdge="none"
+                    android:overScrollMode="never"
                     android:scrollbars="none">
 
                     <RelativeLayout
@@ -185,7 +187,7 @@
                     android:background="@drawable/back_btn_bg"
                     android:clickable="true"
                     android:onClick="onClick"
-                    android:padding="8dp"
+                    android:padding="12dp"
                     android:src="@drawable/back_btn_img_white" />
 
                 <TextView

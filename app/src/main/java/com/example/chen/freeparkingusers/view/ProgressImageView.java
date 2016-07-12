@@ -1,5 +1,6 @@
 package com.example.chen.freeparkingusers.view;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -8,6 +9,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.Xfermode;
+import android.os.Build;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.AttributeSet;
@@ -86,8 +88,10 @@ public class ProgressImageView extends RelativeLayout {
 
             ViewTreeObserver observer = this.getViewTreeObserver();
             observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
                 @Override
                 public void onGlobalLayout() {
+                    getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     mRectF = new RectF(0, 0, getWidth(), getHeight());
                 }
             });

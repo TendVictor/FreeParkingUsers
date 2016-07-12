@@ -1,6 +1,7 @@
 package com.example.chen.freeparkingusers.activity;
 
 import android.animation.ValueAnimator;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -93,7 +95,7 @@ public class SellerDetailActivity extends Activity {
         ((TextView) findViewById(R.id.tvSellerAddress)).setText(sellerInfo.getSellerAddress());
         ((TextView) findViewById(R.id.tvSellerContact)).setText(sellerInfo.getSellerContact());
         ImageLoader.getInstance(this).bindBitmap(sellerInfo.getSellerImage(),
-                R.drawable.default_user_icon_1, (ImageView) findViewById(R.id.ivSellerImage), new ImageLoader.BindStrategy() {
+                R.drawable.default_img, (ImageView) findViewById(R.id.ivSellerImage), new ImageLoader.BindStrategy() {
                     @Override
                     public void bindBitmapToTarget(ImageView imageView, Bitmap bitmap) {
                         imageView.setImageBitmap(bitmap);
@@ -150,7 +152,7 @@ public class SellerDetailActivity extends Activity {
                         imageScrollView.requestLayout();
                     }
                 });
-                animator.setDuration(200);
+                animator.setDuration(150);
                 animator.start();
             }
         });
@@ -179,9 +181,16 @@ public class SellerDetailActivity extends Activity {
                 new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, imageHeight));
         scrollLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, imageScrollHeight);
         imageScrollView.setLayoutParams(scrollLayoutParams);
-        imageScrollView.requestLayout();
 
-        imageScrollView.scrollTo(0, (imageHeight - imageScrollHeight) / 2);
+        final ViewTreeObserver observer = imageScrollView.getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onGlobalLayout() {
+                imageScrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                imageScrollView.scrollTo(0, (imageHeight - imageScrollHeight) / 2);
+            }
+        });
     }
 
     private void configureTitleLayout() {
