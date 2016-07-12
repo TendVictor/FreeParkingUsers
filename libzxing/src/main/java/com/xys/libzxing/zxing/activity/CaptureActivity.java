@@ -78,7 +78,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     private static final String SCAN_QRCode_URL = "http://139.129.24.127/parking_app/User/user_scanQRcode.php";
 
     private String username = null;
-    private AlertDialog alertDialog = null;
     private ProgressDialog pd = null;
 
     public Handler getHandler() {
@@ -100,6 +99,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         scanPreview = (SurfaceView) findViewById(R.id.capture_preview);
         //扫描视图
         scanCropView = (ScanView) findViewById(R.id.capture_crop_view);
+
+
         inactivityTimer = new InactivityTimer(this);
         beepManager = new BeepManager(this);
 
@@ -107,7 +108,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
     @Override
     protected void onResume() {
-        super.onResume();
 
         // CameraManager must be initialized here, not in onCreate(). This is
         // necessary because we don't
@@ -124,31 +124,39 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             // The activity was paused but not stopped, so the surface still
             // exists. Therefore
             // surfaceCreated() won't be called, so init the camera here.
-            getCameraPermissionAndInitCamera();
+            getCameraPermissionAndInitCamera(scanPreview.getHolder());
+
         } else {
             // Install the callback and wait for surfaceCreated() to init the
             // camera.
+            Log.e("TAG","here");
+
             scanPreview.getHolder().addCallback(this);
+
+
         }
 
         inactivityTimer.onResume();
+
+        super.onResume();
     }
 
 
     //判断系统是否为6.0且获取权限(拍照)
-    public void getCameraPermissionAndInitCamera(){
+    public void getCameraPermissionAndInitCamera(SurfaceHolder holder){
 
         int  currentapiVersion = android.os.Build.VERSION.SDK_INT;
+
         //若是大于6.0，则需代码获取权限
         if(currentapiVersion >= 23){
             if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) !=
                     PackageManager.PERMISSION_GRANTED){
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},REQUEST_CAMERA);
             }else{
-                initCamera(scanPreview.getHolder());
+                initCamera(holder);
             }
         }else{//版本低于6.0
-            initCamera(scanPreview.getHolder());
+            initCamera(holder);
         }
 
     }
@@ -159,7 +167,11 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
         if(requestCode == REQUEST_CAMERA){
             if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                initCamera(scanPreview.getHolder());
+
+                Log.e("TAG","onRequestPermissionsResult");
+                scanCropView.invalidate();
+//                initCamera(scanPreview.getHolder());
+
             }else{//拒绝了
                 Toast.makeText(CaptureActivity.this,"摄像头权限拒绝",Toast.LENGTH_SHORT).show();
             }
@@ -192,9 +204,13 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         if (holder == null) {
             Log.e(TAG, "*** WARNING *** surfaceCreated() gave us a null surface!");
         }
+
         if (!isHasSurface) {
+
+            Log.e("TAG","OnCreat");
             isHasSurface = true;
-            initCamera(holder);
+            getCameraPermissionAndInitCamera(holder);
+
         }
     }
 
@@ -321,6 +337,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 handler = new CaptureActivityHandler(this, cameraManager, DecodeThread.ALL_MODE);
             }
             initCrop();
+
         } catch (IOException ioe) {
             Log.e(TAG, ioe.getMessage());
             displayFrameworkBugMessageAndExit();

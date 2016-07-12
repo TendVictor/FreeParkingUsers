@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <FrameLayout
         android:id="@+id/capture_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -46,5 +46,5 @@
                 android:layout_centerInParent="true"
                 />
         </RelativeLayout>
-    </RelativeLayout>
+    </FrameLayout>
 </FrameLayout>
