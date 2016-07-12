@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.chen.freeparkingusers.R;
@@ -41,6 +43,9 @@ public class SellerFragment extends BaseFragment{
 
     private final String search_word = "";
     private int number_limit = 0;
+
+    private LinearLayout nodataLinear;
+    private TextView tv_showNodata;
 
     private SwipeRefreshLayout mSwipeLayout;
     private RecyclerView mRecyclerView;
@@ -76,15 +81,26 @@ public class SellerFragment extends BaseFragment{
             if(footHolder == null)
                 footHolder = (SellerAdapter.FootViewHolder)
                         mRecyclerView.findViewHolderForAdapterPosition(totalItemCount);
-
+            adjustIfhasData();
             mSellerAdapter.notifyDataSetChanged();
             mSwipeLayout.setRefreshing(false);
+
+            tv_showNodata.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getSellerInfo("",0);
+                }
+            });
         }
     };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container , Bundle SavedInstanceState){
         View view = inflater.inflate(R.layout.fragment_campaign,null,false);
+
+        nodataLinear = (LinearLayout) view.findViewById(R.id.container_campaign_nodata);
+        tv_showNodata = (TextView) view.findViewById(R.id.tv_littledata);
+
         mLayoutManager = new LinearLayoutManager(getActivity());
         mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_seller);
         mSwipeLayout.setColorSchemeResources(R.color.colorAppTheme);
@@ -122,6 +138,7 @@ public class SellerFragment extends BaseFragment{
         mDatas = new ArrayList<>();
         number_limit = 0;
         getSellerInfo(search_word,number_limit);
+        adjustIfhasData();
 
         mSellerAdapter = new SellerAdapter(getActivity(), (ArrayList<SellerInfo>) mDatas);
         mSellerAdapter.setOnItemClickListener(new SellerAdapter.onItemClickListener() {
@@ -137,6 +154,25 @@ public class SellerFragment extends BaseFragment{
         mRecyclerView.setAdapter(mSellerAdapter);
 
         return view;
+    }
+
+    //判断界面是否有数据
+    public void adjustIfhasData(){
+        if(mDatas.isEmpty()){
+            //没有数据
+            mSwipeLayout.setVisibility(View.GONE);
+            nodataLinear.setVisibility(View.VISIBLE);
+        }else{
+            //有数据
+            nodataLinear.setVisibility(View.GONE);
+            mSwipeLayout.setVisibility(View.VISIBLE);
+        }
+
+    }
+
+
+    protected void takeData(View view){
+        getSellerInfo("",0);
     }
 
     //滑动底层加载更多

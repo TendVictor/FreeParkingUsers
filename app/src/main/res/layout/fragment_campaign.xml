@@ -18,5 +18,20 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/container_campaign_nodata">
+
+        <TextView
+            android:id="@+id/tv_littledata"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="暂时没有数据，请等待;\r\n 可以点击，手动刷新" />
+
+    </RelativeLayout>
 
 </LinearLayout>
