@@ -139,7 +139,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 intoUserInfo();
                 break;
             case R.id.iv_scan:
-                scanQRCode();
+                ScanQRCode();
                 break;
             case R.id.ev_search:
                 intoSearch();
@@ -147,15 +147,13 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
     }
 
-    public void scanQRCode(){
-
+    public void ScanQRCode(){
         //已登录则可以扫描
         if(Config.username != null){
             Intent i = new Intent(MainActivity.this, CaptureActivity.class);
             i.putExtra("user_id",Config.username);
             startActivity(i);
-        }
-        //没有登录则提示登录
+        }//没有登录则提示登录
         else{
             new AlertDialog.Builder(this).setMessage("您还没有登录，请先登录").setPositiveButton("这就登录", new DialogInterface.OnClickListener() {
                 @Override
