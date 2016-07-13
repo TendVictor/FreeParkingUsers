@@ -129,6 +129,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         initView();
     }
 
+    //确保Destroy处理掉bitmap等占内存
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -159,6 +160,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     }
 
 
+    //监听点击事件
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -228,7 +230,6 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory()
                 , IMAGE_FILE_NAME));
-//        intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
         Log.d("before", cameraUri + "");
         startActivityForResult(intent, SELECT_PIC_BY_TAKE_PHOTO);
         Log.d("after", cameraUri + "");
@@ -242,6 +243,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         startActivityForResult(intent, SELECT_PIC_BY_PICK_PHOTO);
     }
 
+    //回调在获取权限后的处理
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
         if(requestCode == REQUEST_CAMERA){
@@ -254,6 +256,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    //使用startActivityForResult后，返回信息的处理
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data != null || requestCode == SELECT_PIC_BY_TAKE_PHOTO) {
@@ -273,7 +276,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    //上传使用七牛云
+    //使用七牛云上传图片
     private void uploadUsrImg() {
         ivUserImg.setProgressEnable(true);
         try {
@@ -318,6 +321,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         finish();
     }
 
+    //判断是否退出登录
     private void Adjustlogout() {
         Dialog dialog = new AlertDialog.Builder(this).setTitle("提示")
                 .setMessage("确定退出登录吗？").setNeutralButton("退出登录", new DialogInterface.OnClickListener() {
@@ -505,6 +509,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
 
     }
 
+    //判断参数是否都存在
     private boolean checkInfoIsNull(Object... keys) {
         boolean someisNull = false;
         for (int i = 0; i < keys.length; i++) {

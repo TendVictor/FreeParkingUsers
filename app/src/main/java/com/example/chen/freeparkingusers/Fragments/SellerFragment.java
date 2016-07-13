@@ -186,6 +186,7 @@ public class SellerFragment extends BaseFragment{
         }, 3000);
     }
 
+    //没有数据的展示
     public void nomoreData(){
         if(footHolder != null)
             footHolder.setIsHaveData(true);
