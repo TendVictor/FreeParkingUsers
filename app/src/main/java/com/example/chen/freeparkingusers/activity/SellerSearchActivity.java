@@ -107,7 +107,13 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
     private void getDatas(){
 
         for(int i = 0; i < 30 ; i++){
-            SellerInfo s = new SellerInfo(i+"","name"+i,"SellerImg","the place:"+i , "the contact:" +i);
+            SellerInfo s = new SellerInfo(
+                    i+"",
+                    "name"+i,
+                    "SellerImg",
+                    "the place:"+i ,
+                    "the contact:" +i ,
+                    "the distance:" + i);
             searchDatas.add(s);
         }
     }
@@ -142,7 +148,9 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
                                     object.getString("seller_name"),
                                     object.getString("seller_img"),
                                     object.getString("seller_address"),
-                                    object.getString("seller_contact"));
+                                    object.getString("seller_contact"),
+                                    object.getString("distance")
+                            );
                             searchDatas.add(info);
                         }
                         Log.d("result1111", searchDatas.size()+"");

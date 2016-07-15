@@ -15,6 +15,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
 import com.example.chen.freeparkingusers.R;
 import com.example.chen.freeparkingusers.activity.SellerDetailActivity;
 import com.example.chen.freeparkingusers.adapter.SellerAdapter;
@@ -34,6 +38,27 @@ import java.util.List;
  */
 public class SellerFragment extends BaseFragment{
 
+    private LocationClient mLocationClient = null;
+    private BDLocationListener mdListener = new BDLocationListener() {
+        @Override
+        public void onReceiveLocation(BDLocation location) {
+            //Receive Location
+
+            latitude = location.getLatitude();
+            longtitude = location.getLongitude();
+            Log.d("latitude",latitude+"         " +location.getLocType());
+            Log.d("longtitude",longtitude+"");
+
+            if(!checkInfoIsNull(latitude,longtitude))
+                getSellerInfo(search_word,number_limit,latitude,longtitude);
+            mLocationClient.stop();
+        }
+
+    };
+
+    private double latitude;
+    private double longtitude;
+
     private SellerAdapter.FootViewHolder footHolder;
     private boolean isLoading = false;
     private boolean loadingAble = true;
@@ -41,7 +66,7 @@ public class SellerFragment extends BaseFragment{
     private int last = 0;
     private int totalItemCount = 0;
 
-    private final String search_word = "";
+    private String search_word = "";
     private int number_limit = 0;
 
     private RelativeLayout nodataLinear;
@@ -88,7 +113,7 @@ public class SellerFragment extends BaseFragment{
             tv_showNodata.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    getSellerInfo("",0);
+                    getSellerInfoAfterLocation("",0);
                 }
             });
         }
@@ -97,7 +122,38 @@ public class SellerFragment extends BaseFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container , Bundle SavedInstanceState){
         View view = inflater.inflate(R.layout.fragment_campaign,null,false);
+        initLocation();
+        initView(view);
 
+
+        return view;
+    }
+
+    //初始化位置信息
+    private void initLocation() {
+        mLocationClient = new LocationClient(getActivity().getApplicationContext());
+        mLocationClient.registerLocationListener(mdListener);
+
+        LocationClientOption option = new LocationClientOption();
+        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy
+        );//可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
+        option.setCoorType("bd09ll");//可选，默认gcj02，设置返回的定位结果坐标系
+        int span=1000;
+        option.setScanSpan(1000);//可选，默认0，即仅定位一次，设置发起定位请求的间隔需要大于等于1000ms才是有效的
+        option.setIsNeedAddress(true);//可选，设置是否需要地址信息，默认不需要
+        option.setOpenGps(true);//可选，默认false,设置是否使用gps
+        option.setLocationNotify(true);//可选，默认false，设置是否当gps有效时按照1S1次频率输出GPS结果
+        option.setIsNeedLocationDescribe(true);//可选，默认false，设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
+        option.setIsNeedLocationPoiList(true);//可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
+        option.setIgnoreKillProcess(false);//可选，默认true，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死
+        option.SetIgnoreCacheException(false);//可选，默认false，设置是否收集CRASH信息，默认收集
+        option.setEnableSimulateGps(false);//可选，默认false，设置是否需要过滤gps仿真结果，默认需要
+        mLocationClient.setLocOption(option);
+    }
+
+
+    //初始化view
+    private void initView(View view) {
         nodataLinear = (RelativeLayout) view.findViewById(R.id.container_campaign_nodata);
         tv_showNodata = (TextView) view.findViewById(R.id.tv_littledata);
 
@@ -113,7 +169,7 @@ public class SellerFragment extends BaseFragment{
             public void onScrollStateChanged(RecyclerView recyclerView, int newstate) {
                 super.onScrollStateChanged(recyclerView, newstate);
                 Log.d("loadmoreBefore", isLoading + "");
-                if (last >= totalItemCount  && !isLoading && loadingAble) {
+                if (last >= totalItemCount && !isLoading && loadingAble) {
                     isLoading = true;
                     loadmore();
                 }
@@ -123,11 +179,11 @@ public class SellerFragment extends BaseFragment{
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 last = mLayoutManager.findLastCompletelyVisibleItemPosition();
-                Log.d("second1", mLayoutManager.findLastVisibleItemPosition()+"  "+mLayoutManager.getChildCount());
-                if(mRecyclerView.getChildAt(mLayoutManager.getChildCount()) != null){
-                    Log.d("second","1");
-                    if(mSellerAdapter.getItemViewType(mLayoutManager.findLastVisibleItemPosition()) == 2){
-                       Log.d("height", mRecyclerView.getChildAt(mLayoutManager.findLastVisibleItemPosition()).getHeight()+"");
+                Log.d("second1", mLayoutManager.findLastVisibleItemPosition() + "  " + mLayoutManager.getChildCount());
+                if (mRecyclerView.getChildAt(mLayoutManager.getChildCount()) != null) {
+                    Log.d("second", "1");
+                    if (mSellerAdapter.getItemViewType(mLayoutManager.findLastVisibleItemPosition()) == 2) {
+                        Log.d("height", mRecyclerView.getChildAt(mLayoutManager.findLastVisibleItemPosition()).getHeight() + "");
                     }
                 }
             }
@@ -137,7 +193,7 @@ public class SellerFragment extends BaseFragment{
 
         mDatas = new ArrayList<>();
         number_limit = 0;
-        getSellerInfo(search_word,number_limit);
+        getSellerInfoAfterLocation(search_word,number_limit);
         adjustIfhasData();
 
         mSellerAdapter = new SellerAdapter(getActivity(), (ArrayList<SellerInfo>) mDatas);
@@ -152,9 +208,8 @@ public class SellerFragment extends BaseFragment{
         });
 
         mRecyclerView.setAdapter(mSellerAdapter);
-
-        return view;
     }
+
 
     //判断界面是否有数据
     public void adjustIfhasData(){
@@ -171,17 +226,13 @@ public class SellerFragment extends BaseFragment{
     }
 
 
-    protected void takeData(View view){
-        getSellerInfo("",0);
-    }
-
     //滑动底层加载更多
     public void loadmore(){
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 Log.d("loadmore", "loadmore");
-                getSellerInfo(search_word, number_limit);
+                getSellerInfoAfterLocation(search_word,number_limit);
             }
         }, 3000);
     }
@@ -205,10 +256,11 @@ public class SellerFragment extends BaseFragment{
             footHolder.setIsHaveData(false);
         }
         mDatas.clear();
+        search_word = "";
         number_limit = 0;
         isLoading = false;
         loadingAble = true;
-        getSellerInfo(search_word,number_limit);
+        getSellerInfoAfterLocation(search_word,number_limit);
     }
 
     //测试数据
@@ -220,7 +272,8 @@ public class SellerFragment extends BaseFragment{
                     "name"+i,
                     "SellerImg",
                     "the place:"+i ,
-                    "the contact:" +i);
+                    "the contact:" +i,
+                    "the distance:"+ i);
             mDatas.add(s);
         }
     }
@@ -233,26 +286,36 @@ public class SellerFragment extends BaseFragment{
         }
     }
 
+    private void getSellerInfoAfterLocation(String search_word , final int number_limit){
+        this.search_word = search_word;
+        this.number_limit = number_limit;
+        mLocationClient.start();
+    }
 
-    private void getSellerInfo(String search_word, final int number_limit){
+
+    private void getSellerInfo(String search_word, final int number_limit,double latitude,double longtitude){
 
         NetPostConnection connection = new NetPostConnection(Config.URL_SELLER_SEARCH,
                 new NetPostConnection.SuccessCallback() {
                     @Override
                     public void onSuccess(String result) throws JSONException {
-                        if(result.equalsIgnoreCase("0")){
+                        if(result.contains("\"state\":0")){
                             handler.obtainMessage(0x3).sendToTarget();
                             return;
                         }
                         JSONArray jsonArray = new JSONArray(result);
                         for (int i = 0; i < jsonArray.length(); i++){
                             JSONObject object = (JSONObject) jsonArray.getJSONObject(i);
+                            String [] address = object.getString("seller_address").split("%");
+
                             SellerInfo info = new SellerInfo(
                                     object.getString("seller_id"),
                                     object.getString("seller_name"),
                                     object.getString("seller_img"),
-                                    object.getString("seller_address"),
-                                    object.getString("seller_contact"));
+                                    address[0],
+                                    object.getString("seller_contact"),
+                                    object.getString("distance")
+                            );
                             mDatas.add(info);
                         }
                         handler.obtainMessage(0x0).sendToTarget();
@@ -263,8 +326,21 @@ public class SellerFragment extends BaseFragment{
             public void onFail() {
                 handler.obtainMessage(0x1).sendToTarget();
             }
-        }, "search_word",search_word,"number_limit",number_limit);
+        }, "search_word",search_word,"number_limit",number_limit,"location_j",longtitude,"location_w",latitude);
 
+    }
+
+    //判断参数是否都存在
+    private boolean checkInfoIsNull(Object... keys) {
+        boolean someisNull = false;
+        for (int i = 0; i < keys.length; i++) {
+            if (keys[i] == null){
+                someisNull = true;
+                Log.d("someisNull", keys[i].toString()+"  is null");
+                break;
+            }
+        }
+        return someisNull;
     }
 
 }

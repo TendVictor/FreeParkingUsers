@@ -65,7 +65,7 @@ public class SellerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public int getItemViewType(int position) {
-        if (position >= getItemCount()-1)
+        if (position >= getItemCount() - 1)
             return FOOT_TYPE;
         else
             return BODY_TYPE;
@@ -84,12 +84,13 @@ public class SellerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         (mDatas.get(position).getSellerImage(),
                                 R.drawable.default_img,
                                 ((myViewHolder) holder).image);
+                ((myViewHolder) holder).distance.setText(changeTypeDistance(mDatas.get(position).getSellerdistance()));
 
                 ((myViewHolder) holder).itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         int pos = position;
-                        mOnItemClickListener.onItemClick(v,pos);
+                        mOnItemClickListener.onItemClick(v, pos);
                     }
                 });
                 break;
@@ -105,6 +106,13 @@ public class SellerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
+    private String changeTypeDistance(String distance) {
+        String standardDistance = distance.substring(0, 3);
+        standardDistance += "km";
+
+        return standardDistance;
+    }
+
     //暴露在外的接口
     public void setOnItemClickListener(SellerAdapter.onItemClickListener mOnItemClickListener) {
         this.mOnItemClickListener = mOnItemClickListener;
@@ -117,7 +125,7 @@ public class SellerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     class myViewHolder extends RecyclerView.ViewHolder {
 
-        TextView name, place, contact;
+        TextView name, place, contact, distance;
         ImageView image;
 
         public myViewHolder(View itemView) {
@@ -126,6 +134,7 @@ public class SellerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             place = (TextView) itemView.findViewById(R.id.tv_seller_address);
             contact = (TextView) itemView.findViewById(R.id.tv_seller_contact);
             image = (ImageView) itemView.findViewById(R.id.iv_seller);
+            distance = (TextView) itemView.findViewById(R.id.tv_distance);
         }
     }
 

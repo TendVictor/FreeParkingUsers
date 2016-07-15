@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.example.pants.freeparkingtest.view.OverScrollView
+    <com.example.chen.freeparkingusers.view.OverScrollView
         android:id="@+id/overScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -131,7 +131,7 @@
 
             </LinearLayout>
         </LinearLayout>
-    </com.example.pants.freeparkingtest.view.OverScrollView>
+    </com.example.chen.freeparkingusers.view.OverScrollView>
 
     <RelativeLayout
         android:layout_width="match_parent"
