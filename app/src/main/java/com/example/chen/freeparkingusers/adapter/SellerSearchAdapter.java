@@ -44,6 +44,7 @@ public class SellerSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         ((myViewHolder) holder).name.setText(mDatas.get(position).getSellerName());
         ((myViewHolder) holder).place.setText(mDatas.get(position).getSellerAddress());
         ((myViewHolder) holder).contact.setText(mDatas.get(position).getSellerContact());
+        ((myViewHolder) holder).distance.setText(changeTypeDistance(mDatas.get(position).getSellerdistance()));
         ImageLoader.getInstance(context).bindBitmap
                 (mDatas.get(position).getSellerImage(),
                         R.drawable.default_img,
@@ -63,6 +64,14 @@ public class SellerSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         return mDatas.size();
     }
 
+
+    private String changeTypeDistance(String distance) {
+        String standardDistance = distance.substring(0, 3);
+        standardDistance += "km";
+
+        return standardDistance;
+    }
+
     //暴露在外的接口
     public void setOnItemClickListener(SellerSearchAdapter.onItemClickListener mOnItemClickListener) {
         this.mOnItemClickListener = mOnItemClickListener;
@@ -76,7 +85,7 @@ public class SellerSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     class myViewHolder extends RecyclerView.ViewHolder {
 
-        TextView name, place, contact;
+        TextView name, place, contact,distance;
         ImageView image;
 
         public myViewHolder(View itemView) {
@@ -85,6 +94,7 @@ public class SellerSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             place = (TextView) itemView.findViewById(R.id.tv_seller_address);
             contact = (TextView) itemView.findViewById(R.id.tv_seller_contact);
             image = (ImageView) itemView.findViewById(R.id.iv_seller);
+            distance = (TextView) itemView.findViewById(R.id.tv_distance);
         }
     }
 

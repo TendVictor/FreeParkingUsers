@@ -47,17 +47,20 @@ public class SellerFragment extends BaseFragment{
             latitude = location.getLatitude();
             longtitude = location.getLongitude();
             Log.d("latitude",latitude+"         " +location.getLocType());
-            Log.d("longtitude",longtitude+"");
+            Log.d("longtitude", longtitude + "");
 
-            if(!checkInfoIsNull(latitude,longtitude))
+            if(!checkInfoIsNull(latitude,longtitude)){
+                if(!isLoading)
+                    mDatas.clear();
                 getSellerInfo(search_word,number_limit,latitude,longtitude);
+            }
             mLocationClient.stop();
         }
 
     };
 
-    private double latitude;
-    private double longtitude;
+    private double latitude = 0;
+    private double longtitude = 0;
 
     private SellerAdapter.FootViewHolder footHolder;
     private boolean isLoading = false;
@@ -231,7 +234,7 @@ public class SellerFragment extends BaseFragment{
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.d("loadmore", "loadmore");
+                Log.d("loadmore", "loadmore    "+search_word +"    "+ number_limit);
                 getSellerInfoAfterLocation(search_word,number_limit);
             }
         }, 3000);
@@ -255,7 +258,6 @@ public class SellerFragment extends BaseFragment{
         if(footHolder != null){
             footHolder.setIsHaveData(false);
         }
-        mDatas.clear();
         search_word = "";
         number_limit = 0;
         isLoading = false;
@@ -341,6 +343,17 @@ public class SellerFragment extends BaseFragment{
             }
         }
         return someisNull;
+    }
+
+    /**
+
+     */
+    public double getLatitude(){
+        return latitude;
+    }
+
+    public double getLongtitude(){
+        return longtitude;
     }
 
 }

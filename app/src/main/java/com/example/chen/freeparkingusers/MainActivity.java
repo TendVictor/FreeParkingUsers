@@ -173,6 +173,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     public void intoSearch(){
         Intent i = new Intent(MainActivity.this, SellerSearchActivity.class);
+        if(mSellerFragment.getLatitude() != 0 && mSellerFragment.getLongtitude() != 0){
+            i.putExtra("longtitude",mSellerFragment.getLongtitude());
+            i.putExtra("latitude",mSellerFragment.getLatitude());
+        }
         startActivity(i);
     }
 

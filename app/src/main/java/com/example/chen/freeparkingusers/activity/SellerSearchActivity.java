@@ -46,12 +46,15 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
     private List<SellerInfo> searchDatas;
     private SellerSearchAdapter searchSellerAdapter;
 
+    private double latitude = 0;
+    private double longtitude = 0;
+
     private Handler handler = new Handler(){
 
         @Override
         public void handleMessage(Message msg){
             switch (msg.what){
-                case 0x0:
+                case 0x0://加载更多或刷新数据
                     searchSellerAdapter.notifyDataSetChanged();
                     break;
                 case 0x1:
@@ -70,6 +73,9 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sellersearch);
+        Intent intent = getIntent();
+        latitude =  intent.getDoubleExtra("latitude",0);
+        longtitude = intent.getDoubleExtra("longtitude",0);
         initView();
     }
 
@@ -88,7 +94,7 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
         searchRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         searchDatas = new ArrayList<>();
-        startSearchSeller("",0);
+        startSearchSeller("",0,latitude,longtitude);
 
         searchSellerAdapter = new SellerSearchAdapter(this, (ArrayList<SellerInfo>) searchDatas);
         searchSellerAdapter.setOnItemClickListener(new SellerSearchAdapter.onItemClickListener() {
@@ -129,7 +135,7 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
 
 
     //接口对接，搜搜
-    private void startSearchSeller(String search_word, int number_limit) {
+    private void startSearchSeller(String search_word, int number_limit,double latitude, double longtitude) {
         NetPostConnection connection = new NetPostConnection(Config.URL_SELLER_SEARCH,
                 new NetPostConnection.SuccessCallback() {
                     @Override
@@ -143,11 +149,12 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
                         searchDatas.clear();
                         for (int i = 0; i < jsonArray.length(); i++){
                             JSONObject object = (JSONObject) jsonArray.getJSONObject(i);
+                            String [] address = object.getString("seller_address").split("%");
                             SellerInfo info = new SellerInfo(
                                     object.getString("seller_id"),
                                     object.getString("seller_name"),
                                     object.getString("seller_img"),
-                                    object.getString("seller_address"),
+                                    address[0],
                                     object.getString("seller_contact"),
                                     object.getString("distance")
                             );
@@ -162,9 +169,10 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
             public void onFail() {
                 handler.obtainMessage(0x1).sendToTarget();
             }
-        }, "search_word",search_word,"number_limit",number_limit);
+        }, "search_word",search_word,"number_limit",number_limit,"location_j",longtitude,"location_w",latitude);
 
     }
+
 
 
     class onRefreshListener implements SwipeRefreshLayout.OnRefreshListener {
@@ -192,7 +200,7 @@ public class SellerSearchActivity extends Activity implements View.OnClickListen
         @Override
         public void afterTextChanged(Editable s) {
             Log.d("Editafter", searchTemp+"");
-            startSearchSeller(searchTemp.toString(), 0);
+            startSearchSeller(searchTemp.toString(), 0,latitude,longtitude);
         }
     }
 

@@ -28,6 +28,8 @@ public class SellerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private Context context;
     private ArrayList<SellerInfo> mDatas;
 
+    private boolean ableTouch = true;
+
     public SellerAdapter(Context context, ArrayList<SellerInfo> mDatas) {
         this.context = context;
         this.mDatas = mDatas;
@@ -93,6 +95,8 @@ public class SellerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         mOnItemClickListener.onItemClick(v, pos);
                     }
                 });
+
+
                 break;
             case FOOT_TYPE:
                 if (((FootViewHolder) holder).isNoData) {
@@ -112,6 +116,8 @@ public class SellerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         return standardDistance;
     }
+
+
 
     //暴露在外的接口
     public void setOnItemClickListener(SellerAdapter.onItemClickListener mOnItemClickListener) {

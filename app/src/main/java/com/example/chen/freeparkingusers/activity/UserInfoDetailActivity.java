@@ -436,32 +436,6 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         },"key",key);
     }
 
-    //请求七牛云token
-    private void applyforToken() {
-        new NetPostConnection(Config.URL_GET_TOKENS, new NetPostConnection.SuccessCallback() {
-
-            @Override
-            public void onSuccess(String result) throws JSONException {
-//                Log.d("onSuccess", result + "");
-                if (result.equalsIgnoreCase("1")) {
-                    handler.obtainMessage(0x1).sendToTarget();
-                    return;
-                }
-                JSONObject object = new JSONObject(result);
-                tokens = object.get("uptoken").toString();
-                Log.d("tokens", tokens + "");
-                if (tokens != null) {
-                    handler.obtainMessage(0x2).sendToTarget();
-                }
-            }
-        }, new NetPostConnection.FailCallback() {
-            @Override
-            public void onFail() {
-                handler.obtainMessage(0x3).sendToTarget();
-            }
-        }, "", "");
-    }
-
     //裁剪图片
     private void finishCrop(Intent intent) {
         if (intent != null) {
