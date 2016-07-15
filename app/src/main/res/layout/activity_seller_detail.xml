@@ -82,6 +82,7 @@
                     <TextView
                         android:id="@+id/tvSellerAddress"
                         android:layout_width="match_parent"
+                        android:layout_marginRight="@dimen/text_horizontal_margin1"
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorTextDark"
                         android:textSize="@dimen/text_size_large" />
