@@ -75,15 +75,14 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/line_height_larger"
-                    android:gravity="center_vertical">
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="12dp"
+                    android:paddingTop="12dp">
 
                     <TextView
                         android:id="@+id/tvSellerAddress"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:maxLines="1"
                         android:textColor="@color/colorTextDark"
                         android:textSize="@dimen/text_size_large" />
 
@@ -91,9 +90,11 @@
 
             </LinearLayout>
 
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
                 android:background="@color/colorItemBackground"
                 android:orientation="horizontal">
 
