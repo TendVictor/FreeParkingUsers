@@ -233,8 +233,8 @@ public class SellerDetailActivity extends Activity {
                                     jsonObject.getInt("activity_id"),
                                     jsonObject.getString("activity_img"),
                                     jsonObject.getString("activity_name"),
-                                    jsonObject.getString("activity_endtime"),
                                     jsonObject.getString("activity_starttime"),
+                                    jsonObject.getString("activity_endtime"),
                                     jsonObject.getString("activity_detail")
                             );
                             campaignInfoList.add(info);
