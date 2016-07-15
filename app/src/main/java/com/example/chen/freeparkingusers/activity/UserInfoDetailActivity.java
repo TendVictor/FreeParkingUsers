@@ -46,6 +46,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 /**
  * Created by chen on 16/7/6.
@@ -74,6 +75,7 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     private String tokens = null;
     private String userName;
     private String userImg;
+    private String key = null;
 
 
     private ImageView ivBack, ivLogout;
@@ -268,8 +270,10 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
                     }
                     break;
                 case SELECT_PIC_BY_TAKE_PHOTO:
-                    if(data != null && resultCode == RESULT_OK)
-                            finishCrop(data);
+                    if(data != null && resultCode == RESULT_OK){
+                        isImgChange = true;
+                        finishCrop(data);
+                    }
                     break;
             }
         }
@@ -297,11 +301,13 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
                     Log.d("responseqiniu", key + "   ,\r\n " + info + ",\r\n" + response);
                     ivUserImg.setProgressEnable(false);
                     isImgChange = false;
+                    userImg = Config.IMG_PREFIX + key;
+                    Log.d("userImgComplete",userImg);
                 }
             };
 
 
-            uploadManager.put(result, "user5", tokens, upHandler, new UploadOptions(null, null, false,
+            uploadManager.put(result, key, tokens, upHandler, new UploadOptions(null, null, false,
                     new UpProgressHandler() {
                         @Override
                         public void progress(String key, double percent) {
@@ -397,13 +403,38 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
     private void downloadImg() {
         if (userImg != null) {
             userImg.replace("\\", "");
-            Log.d("downloadImg", userImg);
-            ImageLoader.getInstance(this).bindBitmap(userImg, R.drawable.default_img,
+            String getUserImg = userImg += "?v=" + new Random().nextInt(10000);
+            Log.d("getUserImg", getUserImg);
+            ImageLoader.getInstance(this).bindBitmap(getUserImg, R.drawable.default_img,
                     ivUserImg.getImageView(), ImageLoader.getInstance(this).roundedBindStrategy);
 
         }
     }
 
+    //
+    private void getTokenIfChanged(String key){
+        Log.d("key",key);
+        new NetPostConnection(Config.URL_PICTURE_UPLOAD, new NetPostConnection.SuccessCallback() {
+            @Override
+            public void onSuccess(String result) throws JSONException {
+                if(result.contains("\"state\":1")){
+                    handler.obtainMessage(0x1).sendToTarget();
+                    return;
+                }
+                JSONObject object = new JSONObject(result);
+                tokens = object.get("uptoken").toString();
+                Log.d("tokens", tokens + "");
+                if (tokens != null) {
+                    handler.obtainMessage(0x2).sendToTarget();
+                }
+            }
+        }, new NetPostConnection.FailCallback() {
+            @Override
+            public void onFail() {
+                handler.obtainMessage(0x3).sendToTarget();
+            }
+        },"key",key);
+    }
 
     //请求七牛云token
     private void applyforToken() {
@@ -453,6 +484,11 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
                     RoundedBitmapDrawableFactory.create(getResources(), bitmap);
             roundedBitmapDrawable.setCornerRadius(bitmap.getWidth() / 2);
             ivUserImg.getImageView().setImageDrawable(roundedBitmapDrawable);
+
+            if(isImgChange){
+                key = tvUserid.getText().toString();
+                getTokenIfChanged(key);
+            }
         }
     }
 
@@ -504,8 +540,10 @@ public class UserInfoDetailActivity extends Activity implements View.OnClickList
         roundedBitmapDrawable.setCornerRadius(bitmap.getWidth() / 2);
         ivUserImg.getImageView().setImageDrawable(roundedBitmapDrawable);
 
-        if (isImgChange)
-            applyforToken();
+        if (isImgChange){
+            key = tvUserid.getText().toString();
+            getTokenIfChanged(key);
+        }
 
     }
 

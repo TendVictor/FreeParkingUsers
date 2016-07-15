@@ -13,7 +13,11 @@ public class SellerInfo implements Parcelable {
     private String sellerImg;
     private String sellerAddress;
     private String sellerContact;
+    private String sellerdistance;
 
+    public String getSellerdistance() {
+        return sellerdistance;
+    }
 
     public String getSellerId() {
         return sellerId;
@@ -36,12 +40,14 @@ public class SellerInfo implements Parcelable {
     }
 
 
-    public SellerInfo(String sellerId, String sellerName, String sellerImg, String sellerAddress, String sellerContact) {
+    public SellerInfo(String sellerId, String sellerName,
+                      String sellerImg, String sellerAddress, String sellerContact,String sellerDistance) {
         this.sellerId = sellerId;
         this.sellerName = sellerName;
         this.sellerImg = sellerImg;
         this.sellerAddress = sellerAddress;
         this.sellerContact = sellerContact;
+        this.sellerdistance = sellerDistance;
     }
 
     protected SellerInfo(Parcel in) {
@@ -50,6 +56,7 @@ public class SellerInfo implements Parcelable {
         sellerImg = in.readString();
         sellerAddress = in.readString();
         sellerContact = in.readString();
+        sellerdistance = in.readString();
     }
 
     @Override

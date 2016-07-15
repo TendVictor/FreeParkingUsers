@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:paddingTop="1dp"
+    android:layout_height="100dp"
+    android:background="#d1d9df"
     android:paddingBottom="0.5dp"
-    android:background="#d1d9df">
+    android:paddingTop="1dp">
+
 
     <LinearLayout
+        android:id="@+id/sellerinfo_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#ffffff"
@@ -20,7 +22,7 @@
             android:layout_margin="16dp"
             android:layout_weight="1.0"
             android:background="@drawable/default_img"
-            android:scaleType="centerCrop"/>
+            android:scaleType="centerCrop" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -40,14 +42,16 @@
                 android:textSize="17sp" />
 
             <TextView
+                android:singleLine="true"
                 android:id="@+id/tv_seller_address"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1.0"
                 android:gravity="left|center"
-                android:text="济南高新区万达广场"
+                android:text="丁豪广场"
                 android:textColor="#5e5e5e"
                 android:textSize="14sp" />
+
 
             <TextView
                 android:id="@+id/tv_seller_contact"
@@ -60,5 +64,19 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
+        <TextView
+            android:textColor="#fc7e00"
+            android:id="@+id/tv_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="500m"
+            android:textSize="16sp"
+            android:layout_gravity="right|top"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="16dp"
+            />
+
     </LinearLayout>
+
+
 </RelativeLayout>
