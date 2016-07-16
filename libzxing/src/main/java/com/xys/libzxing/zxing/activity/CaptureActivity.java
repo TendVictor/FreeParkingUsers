@@ -169,8 +169,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
 
                 Log.e("TAG","onRequestPermissionsResult");
-                scanCropView.invalidate();
-//                initCamera(scanPreview.getHolder());
+                initCamera(scanPreview.getHolder());
 
             }else{//拒绝了
                 Toast.makeText(CaptureActivity.this,"摄像头权限拒绝",Toast.LENGTH_SHORT).show();
